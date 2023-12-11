@@ -19,7 +19,7 @@ public class MemberController {
 
     }
 
-    @PostMapping("/login")
+    @PostMapping("/logout")
     public void logoutMember() {
 
     }
