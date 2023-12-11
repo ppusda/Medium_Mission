@@ -17,7 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity @Getter
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class Article extends BaseEntity {
+public class Post extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
