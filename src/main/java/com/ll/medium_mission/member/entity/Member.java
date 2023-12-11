@@ -7,6 +7,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -25,4 +26,10 @@ public class Member extends BaseEntity {
 
     @Column
     private String password;
+
+    @Builder
+    public Member(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
