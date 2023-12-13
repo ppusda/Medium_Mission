@@ -32,4 +32,8 @@ public class Token {
         this.accessToken = accessToken;
         this.memberId = memberId;
     }
+
+    public void modifyAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }

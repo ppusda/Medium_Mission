@@ -6,8 +6,12 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -63,5 +67,11 @@ public class JwtTokenProvider {
         }
     }
 
+    public Authentication getAuthentication(String token) {
+        Claims claims = getClaims(token);
+        User principal = new User(claims.getSubject(), "", new ArrayList<>());
+
+        return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
+    }
 
 }

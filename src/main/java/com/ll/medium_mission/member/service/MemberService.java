@@ -4,8 +4,7 @@ import com.ll.medium_mission.global.provider.JwtTokenProvider;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
-import com.ll.medium_mission.token.entity.Token;
-import com.ll.medium_mission.token.repository.TokenRepository;
+import com.ll.medium_mission.token.service.TokenService;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +18,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final TokenRepository tokenRepository;
+    private final TokenService tokenService;
 
     @Transactional
     public void join(String email, String password) {
@@ -41,7 +40,7 @@ public class MemberService {
         String accessToken = jwtTokenProvider.createAccessToken(email);
         String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
-        saveToken(accessToken, refreshToken, member.getId());
+        tokenService.register(accessToken, refreshToken, member.getId());
 
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
@@ -57,21 +56,13 @@ public class MemberService {
     }
 
     public void logout(String token) {
-        tokenRepository.deleteByAccessToken(token);
+        tokenService.deleteToken(token);
     }
 
     private void checkPassword(Member member, String password) {
         if (passwordEncoder.matches(member.getPassword(), password)) {
             throw new IllegalArgumentException("비밀번호가 틀립니다.");
         }
-    }
-
-    private void saveToken(String accessToken, String refreshToken, Long memberId) {
-        tokenRepository.save(Token.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .memberId(memberId)
-                .build());
     }
 
     public void deleteAll() { // 테스트 전용 메서드
