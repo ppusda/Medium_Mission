@@ -1,7 +1,7 @@
 package com.ll.medium_mission.member.service;
 
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
-import com.ll.medium_mission.member.dto.MemberResponse;
+import com.ll.medium_mission.member.dto.MemberLoginResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
 import com.ll.medium_mission.token.entity.Token;
@@ -32,7 +32,7 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberResponse login(String email, String password) {
+    public MemberLoginResponse login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
@@ -43,7 +43,7 @@ public class MemberService {
 
         saveToken(accessToken, refreshToken, member.getId());
 
-        return MemberResponse.builder()
+        return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .build();
     }

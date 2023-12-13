@@ -10,14 +10,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity @Getter
 @NoArgsConstructor
-@Table
 @EntityListeners(AuditingEntityListener.class)
 public class Post extends BaseEntity {
 
