@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
@@ -23,6 +24,9 @@ class MemberControllerTest {
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @BeforeEach
     public void before() {
@@ -63,7 +67,18 @@ class MemberControllerTest {
     }
 
     @Test
-    void loginMember() {
+    @DisplayName("로그인 요청을 하면 성공적으로 완료된다.")
+    void loginMember() throws Exception {
+        String email = "test@naver.com";
+        String password = "1234";
+
+        memberService.join(email, passwordEncoder.encode(password));
+
+        mockMvc.perform(post("/member/login")
+                        .param("email", "test@naver.com")
+                        .param("password", "1234"))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
 
     @Test
