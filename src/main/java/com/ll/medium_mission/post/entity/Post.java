@@ -1,4 +1,4 @@
-package com.ll.medium_mission.article.entity;
+package com.ll.medium_mission.post.entity;
 
 import com.ll.medium_mission.global.entity.BaseEntity;
 import com.ll.medium_mission.member.entity.Member;
@@ -10,12 +10,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity @Getter
 @NoArgsConstructor
+@Table
 @EntityListeners(AuditingEntityListener.class)
 public class Post extends BaseEntity {
 
