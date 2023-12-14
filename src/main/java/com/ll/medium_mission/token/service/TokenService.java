@@ -40,4 +40,8 @@ public class TokenService {
         token.modifyAccessToken(accessToken);
         tokenRepository.save(token);
     }
+
+    public void deleteAll() { // 테스트용 메서드
+        tokenRepository.deleteAll();
+    }
 }
