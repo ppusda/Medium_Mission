@@ -4,7 +4,7 @@ import com.ll.medium_mission.global.util.ValidateUtil;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.post.dto.PostRequest;
-import com.ll.medium_mission.post.entity.Post;
+import com.ll.medium_mission.post.dto.PostResponse;
 import com.ll.medium_mission.post.service.PostService;
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -32,20 +32,20 @@ public class PostController {
     private final ValidateUtil validateUtil;
 
     @GetMapping
-    public Page<Post> getPosts(@RequestParam("page") int page) {
+    public Page<PostResponse> getPosts(@RequestParam("page") int page) {
         return postService.getPosts(page);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/myList")
-    public Page<Post> getMyPosts(@RequestParam("page") int page, Principal principal) {
+    public Page<PostResponse> getMyPosts(@RequestParam("page") int page, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         return postService.getAuthorsPosts(author, page);
     }
 
     @GetMapping("/{postId}")
-    public Post getPostDetail(@PathVariable("postId") Long postId) {
-        return postService.getPost(postId);
+    public PostResponse getPostDetail(@PathVariable("postId") Long postId) {
+        return postService.getPostResponse(postId);
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -1,6 +1,7 @@
 package com.ll.medium_mission.post.service;
 
 import com.ll.medium_mission.member.entity.Member;
+import com.ll.medium_mission.post.dto.PostResponse;
 import com.ll.medium_mission.post.entity.Post;
 import com.ll.medium_mission.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
@@ -28,14 +29,25 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public Page<Post> getPosts(int page) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return postRepository.findAll(pageable);
+    public Page<PostResponse> getPosts(int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+
+        return convertToResponse(postRepository.findAll(pageable));
     }
 
-    public Page<Post> getAuthorsPosts(Member author, int page) {
-        Pageable pageable = PageRequest.of(page, 10);
-        return postRepository.findAllByAuthor(author, pageable);
+    public Page<PostResponse> getAuthorsPosts(Member author, int page) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return convertToResponse(postRepository.findAllByAuthor(author, pageable));
+    }
+
+    public PostResponse getPostResponse(Long postId) {
+        Post post = getPost(postId);
+
+        return PostResponse.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .author(post.getAuthor().getEmail().split("@")[0])
+                .build();
     }
 
     public Post getPost(Long postId) {
@@ -66,5 +78,15 @@ public class PostService {
         }
 
         postRepository.deleteById(postId);
+    }
+
+    public Page<PostResponse> convertToResponse(Page<Post> postPage) {
+        return postPage.map(post -> PostResponse.builder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .author(post.getAuthor().getEmail().split("@")[0])
+                .createDate(post.getCreateDate())
+                .modifiedDate(post.getModifiedDate())
+                .build());
     }
 }
