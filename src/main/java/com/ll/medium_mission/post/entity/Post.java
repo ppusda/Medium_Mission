@@ -10,8 +10,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity @Getter
@@ -31,5 +33,17 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn
     private Member author;
+
+    @Builder
+    public Post(String title, String content, Member author) {
+        this.title = title;
+        this.content = content;
+        this.author = author;
+    }
+
+    public void modifyPost(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 
 }
