@@ -3,11 +3,11 @@
 	import {onMount} from "svelte";
 	import {page} from "$app/stores";
 
-	let questionId = $state({});
+	let postId = $state({});
 	let questionData = $state({});
 
 	async function getQuestion() {
-		const response = await fetch(`/sbb/question/detail/${questionId}`);
+		const response = await fetch(`/md/post/${postId}`);
 		questionData = await response.json();
 	}
 
@@ -16,7 +16,7 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`/sbb/question/modify/${questionId}`, {
+			const response = await fetch(`/md/post/modify/${postId}`, {
 				method: 'POST',
 				body: formData,
 			});
@@ -29,12 +29,12 @@
 				}
 			}
 
-			window.location.href = `/question/detail/${questionId}`;
+
 		}
 	}
 
 	onMount(async () => {
-		questionId = $page.params['qid'];
+		postId = $page.params['pid'];
 		await getQuestion();
 	});
 
@@ -47,11 +47,11 @@
 
 <section class="pl-10 pr-10">
 	<div>
-		<h2 class="text-3xl font-bold border-bottom py-2 m-5">질문 수정</h2>
+		<h2 class="text-3xl font-bold border-bottom py-2 m-5">글 수정</h2>
 		<form on:submit={handleSubmit} method="post">
 			<div class="flex flex-col m-5">
-				<label for="subject" class="form-label">제목</label>
-				<input class="input input-bordered input-primary mt-3 max-w-full" name="subject" id="subject" type="text" placeholder="제목을 입력해주세요." value="{questionData.subject}"/>
+				<label for="title" class="form-label">제목</label>
+				<input class="input input-bordered input-primary mt-3 max-w-full" name="title" id="title" type="text" placeholder="제목을 입력해주세요." value="{questionData.subject}"/>
 			</div>
 			<div class="flex flex-col m-5">
 				<label for="content" class="form-label">내용</label>

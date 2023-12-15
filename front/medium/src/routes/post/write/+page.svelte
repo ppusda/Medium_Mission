@@ -6,7 +6,7 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`/sbb/question/write`, {
+			const response = await fetch(`/md/post/write`, {
 				method: 'POST',
 				body: formData,
 			});
@@ -19,7 +19,7 @@
 				}
 			}
 
-			window.location.href = `/question`;
+			window.location.href = `/post`;
 		}
 	}
 
@@ -33,11 +33,11 @@
 
 <section class="pl-10 pr-10">
 	<div>
-		<h2 class="text-3xl font-bold border-bottom py-2 m-5">질문 작성</h2>
+		<h2 class="text-3xl font-bold border-bottom py-2 m-5">글 작성</h2>
 		<form on:submit={handleSubmit} method="post">
 			<div class="flex flex-col m-5">
-				<label for="subject" class="form-label">제목</label>
-				<input class="input input-bordered input-primary mt-3 max-w-full" name="subject" id="subject" type="text" placeholder="제목을 입력해주세요."/>
+				<label for="title" class="form-label">제목</label>
+				<input class="input input-bordered input-primary mt-3 max-w-full" name="title" id="title" type="text" placeholder="제목을 입력해주세요."/>
 			</div>
 			<div class="flex flex-col m-5">
 				<label for="content" class="form-label">내용</label>

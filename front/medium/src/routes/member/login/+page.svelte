@@ -41,7 +41,7 @@
 
 <section class="pl-10 pr-10">
   <div>
-    <h2 class="text-3xl font-bold border-bottom py-2 m-5">회원 가입</h2>
+    <h2 class="text-3xl font-bold border-bottom py-2 m-5">로그인</h2>
     <form on:submit={handleSubmit} method="post">
       <div class="flex flex-col m-5">
         <label for="email" class="form-label">아이디</label>
