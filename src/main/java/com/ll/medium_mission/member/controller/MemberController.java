@@ -9,9 +9,9 @@ import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.member.validator.JoinValidator;
 import jakarta.validation.Valid;
 import java.security.Principal;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +50,7 @@ public class MemberController {
         return ResponseEntity.ok(memberService.login(memberLoginRequest.email(), memberLoginRequest.password()));
     }
 
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/logout")
     public void logoutMember(Principal principal) {
         SecurityContextHolder.clearContext();

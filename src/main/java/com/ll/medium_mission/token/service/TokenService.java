@@ -12,8 +12,8 @@ public class TokenService {
 
     private final TokenRepository tokenRepository;
 
-    public Token getToken(String accessToken) {
-        Optional<Token> token = tokenRepository.findByAccessToken(accessToken);
+    public Token getToken(String memberId) {
+        Optional<Token> token = tokenRepository.findByMemberId(Long.parseLong(memberId));
 
         if (token.isEmpty()) {
             throw new IllegalArgumentException("유효하지 않은 인증 값입니다.");
@@ -22,22 +22,17 @@ public class TokenService {
         return token.get();
     }
 
-    public void deleteToken(String accessToken) {
-        tokenRepository.deleteByAccessToken(accessToken);
+    public void deleteToken(String memberId) {
+        Token token = getToken(memberId);
+        tokenRepository.deleteById(token.getId());
     }
 
-    public void register(String accessToken, String refreshToken, Long memberId) {
+    public void register(String refreshToken, Long memberId) {
         Token token = Token.builder()
-                .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .memberId(memberId)
                 .build();
 
-        tokenRepository.save(token);
-    }
-
-    public void modify(Token token, String accessToken) {
-        token.modifyAccessToken(accessToken);
         tokenRepository.save(token);
     }
 

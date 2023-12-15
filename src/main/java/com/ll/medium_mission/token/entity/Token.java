@@ -13,27 +13,20 @@ import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @NoArgsConstructor
-@RedisHash(value = "jwtToken", timeToLive = 60*60*24*3)
+@RedisHash(value = "token", timeToLive = 60*60*24*3)
 public class Token {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
     private Long id;
 
     private String refreshToken;
 
     @Indexed
-    private String accessToken;
-
     private Long memberId;
 
     @Builder
-    public Token(String refreshToken, String accessToken, Long memberId) {
+    public Token(String refreshToken, Long memberId) {
         this.refreshToken = refreshToken;
-        this.accessToken = accessToken;
         this.memberId = memberId;
-    }
-
-    public void modifyAccessToken(String accessToken) {
-        this.accessToken = accessToken;
     }
 }

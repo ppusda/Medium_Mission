@@ -3,8 +3,6 @@ package com.ll.medium_mission.global.util;
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
 import com.ll.medium_mission.token.entity.Token;
 import com.ll.medium_mission.token.service.TokenService;
-import io.jsonwebtoken.Claims;
-import io.netty.util.internal.StringUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -42,16 +40,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getJwtFromRequest(request);
 
-        if (StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {
-            Token token = tokenService.getToken(accessToken);
+        if (StringUtils.hasText(accessToken) && !jwtTokenProvider.validateToken(accessToken)) {
+            String memberId = jwtTokenProvider.getClaims(accessToken).getSubject();
+            Token token = tokenService.getToken(memberId);
 
             if (!jwtTokenProvider.validateToken(token.getRefreshToken())) {
                 throw new AuthenticationException("로그인이 필요합니다.");
             }
 
-            accessToken = jwtTokenProvider.createAccessToken(jwtTokenProvider.getClaims(accessToken).getSubject());
-            tokenService.modify(token, accessToken);
+            accessToken = jwtTokenProvider.createAccessToken(memberId);
 
+            Cookie cookie = new Cookie("accessToken", accessToken);
+            response.addCookie(cookie);
+        }
+
+        if (StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }

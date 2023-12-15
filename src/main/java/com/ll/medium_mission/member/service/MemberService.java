@@ -37,26 +37,26 @@ public class MemberService {
 
         checkPassword(member, password);
 
-        String accessToken = jwtTokenProvider.createAccessToken(email);
-        String refreshToken = jwtTokenProvider.createRefreshToken(email);
+        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
+        String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(member.getId()));
 
-        tokenService.register(accessToken, refreshToken, member.getId());
+        tokenService.register(refreshToken, member.getId());
 
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
                 .build();
     }
 
-    public Member getMember(String email) {
-        Optional<Member> member = this.memberRepository.findByEmail(email);
+    public Member getMember(String id) {
+        Optional<Member> member = this.memberRepository.findById(Long.parseLong(id));
         if (member.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 회원입니다.");
         }
         return member.get();
     }
 
-    public void logout(String token) {
-        tokenService.deleteToken(token);
+    public void logout(String memberId) {
+        tokenService.deleteToken(memberId);
     }
 
     private void checkPassword(Member member, String password) {

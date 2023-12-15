@@ -23,20 +23,20 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(appConfig.getJwtKey());
     }
 
-    public String createAccessToken(String email) {
+    public String createAccessToken(String id) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(id)
                 .signWith(key)
                 .setExpiration(new Date(now.getTime() + (1000L * 60 * 30)))
                 .setIssuedAt(now)
                 .compact();
     }
 
-    public String createRefreshToken(String email) {
+    public String createRefreshToken(String id) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(id)
                 .signWith(key)
                 .setExpiration(new Date(now.getTime() + (1000L * 60 * 60 * 3)))
                 .setIssuedAt(now)
