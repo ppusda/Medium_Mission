@@ -36,8 +36,12 @@ public class PostController {
         return postService.getPosts(page);
     }
 
-    @PreAuthorize("isAuthenticated()")
-    @GetMapping("/myList")
+    @GetMapping("/popular_posts")
+    public Page<PostResponse> getPopularPosts() {
+        return postService.getPosts(0);
+    }
+
+    @GetMapping("/writePosts")
     public Page<PostResponse> getMyPosts(@RequestParam("page") int page, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         return postService.getAuthorsPosts(author, page);

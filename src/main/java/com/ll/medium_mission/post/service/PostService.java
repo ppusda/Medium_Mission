@@ -32,21 +32,24 @@ public class PostService {
     public Page<PostResponse> getPosts(int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
-        return convertToResponse(postRepository.findAll(pageable));
+        return convertToPageResponse(postRepository.findAll(pageable));
     }
 
     public Page<PostResponse> getAuthorsPosts(Member author, int page) {
         Pageable pageable = PageRequest.of(page, 5);
-        return convertToResponse(postRepository.findAllByAuthor(author, pageable));
+        return convertToPageResponse(postRepository.findAllByAuthor(author, pageable));
     }
 
     public PostResponse getPostResponse(Long postId) {
         Post post = getPost(postId);
 
         return PostResponse.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getEmail().split("@")[0])
+                .createDate(post.getCreateDate())
+                .modifiedDate(post.getModifiedDate())
                 .build();
     }
 
@@ -80,8 +83,9 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public Page<PostResponse> convertToResponse(Page<Post> postPage) {
+    public Page<PostResponse> convertToPageResponse(Page<Post> postPage) {
         return postPage.map(post -> PostResponse.builder()
+                .id(post.getId())
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getEmail().split("@")[0])
@@ -89,4 +93,5 @@ public class PostService {
                 .modifiedDate(post.getModifiedDate())
                 .build());
     }
+
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record PostResponse(
+        Long id,
         String content,
         String title,
         String author,
