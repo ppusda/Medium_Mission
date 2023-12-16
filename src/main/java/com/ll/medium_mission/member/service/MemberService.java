@@ -47,6 +47,7 @@ public class MemberService {
                 .build();
     }
 
+    @Transactional
     public Member getMember(String id) {
         Optional<Member> member = this.memberRepository.findById(Long.parseLong(id));
         if (member.isEmpty()) {

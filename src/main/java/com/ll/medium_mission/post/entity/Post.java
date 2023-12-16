@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity @Getter
@@ -27,7 +26,7 @@ public class Post extends BaseEntity {
     @Column
     private String title;
 
-    @Column
+    @Column(columnDefinition = "text")
     private String content;
 
     @ManyToOne
