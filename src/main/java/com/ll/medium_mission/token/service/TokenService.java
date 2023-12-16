@@ -2,6 +2,7 @@ package com.ll.medium_mission.token.service;
 
 import com.ll.medium_mission.token.entity.Token;
 import com.ll.medium_mission.token.repository.TokenRepository;
+import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ public class TokenService {
 
     private final TokenRepository tokenRepository;
 
+    @Transactional
     public Token getToken(String memberId) {
         Optional<Token> token = tokenRepository.findByMemberId(Long.parseLong(memberId));
 
@@ -22,11 +24,13 @@ public class TokenService {
         return token.get();
     }
 
+    @Transactional
     public void deleteToken(String memberId) {
         Token token = getToken(memberId);
         tokenRepository.deleteById(token.getId());
     }
 
+    @Transactional
     public void register(String refreshToken, Long memberId) {
         Token token = Token.builder()
                 .refreshToken(refreshToken)

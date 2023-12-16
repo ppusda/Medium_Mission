@@ -29,17 +29,20 @@ public class PostService {
         postRepository.save(post);
     }
 
+    @Transactional
     public Page<PostResponse> getPosts(int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
         return convertToPageResponse(postRepository.findAll(pageable));
     }
 
+    @Transactional
     public Page<PostResponse> getAuthorsPosts(Member author, int page) {
         Pageable pageable = PageRequest.of(page, 5);
         return convertToPageResponse(postRepository.findAllByAuthor(author, pageable));
     }
 
+    @Transactional
     public PostResponse getPostResponse(Long postId) {
         Post post = getPost(postId);
 
@@ -53,6 +56,7 @@ public class PostService {
                 .build();
     }
 
+    @Transactional
     public Post getPost(Long postId) {
         Optional<Post> post = postRepository.findById(postId);
 
@@ -63,6 +67,7 @@ public class PostService {
         return post.get();
     }
 
+    @Transactional
     public void modify(Long postId, String title, String content, Member author) {
         Post post = getPost(postId);
 
@@ -73,6 +78,7 @@ public class PostService {
         post.modifyPost(title, content);
     }
 
+    @Transactional
     public void delete(Long postId, Member author) {
         Post post = getPost(postId);
 
