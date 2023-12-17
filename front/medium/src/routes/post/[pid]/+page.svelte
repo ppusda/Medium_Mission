@@ -59,7 +59,7 @@
 	async function removePost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/post/${postId}/delete`, {
+			await fetch(`/md/post/${postId}`, {
 				method: 'DELETE',
 			});
 			window.location.href = `/post`;

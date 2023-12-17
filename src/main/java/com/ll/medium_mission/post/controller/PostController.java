@@ -5,6 +5,8 @@ import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.post.dto.PostRequest;
 import com.ll.medium_mission.post.dto.PostResponse;
+import com.ll.medium_mission.post.entity.Post;
+import com.ll.medium_mission.post.service.PostRecommendService;
 import com.ll.medium_mission.post.service.PostService;
 import jakarta.validation.Valid;
 import java.security.Principal;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostController {
 
     private final PostService postService;
+    private final PostRecommendService postRecommendService;
     private final MemberService memberService;
     private final ValidateUtil validateUtil;
 
@@ -36,12 +39,12 @@ public class PostController {
         return postService.getPosts(page);
     }
 
-    @GetMapping("/popular_posts")
+    @GetMapping("/popular-posts")
     public Page<PostResponse> getPopularPosts() {
         return postService.getPosts(0);
     }
 
-    @GetMapping("/writePosts")
+    @GetMapping("/write-posts")
     public Page<PostResponse> getMyPosts(@RequestParam("page") int page, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         return postService.getAuthorsPosts(author, page);
@@ -53,7 +56,7 @@ public class PostController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/write")
+    @PostMapping
     public ResponseEntity<?> writePost(@Valid PostRequest postRequest, BindingResult bindingResult, Principal principal) {
         if (validateUtil.hasErrors(bindingResult)) {
             return validateUtil.getErrors(bindingResult);
@@ -66,14 +69,14 @@ public class PostController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PutMapping("/{postId}/modify")
+    @PutMapping("/{postId}")
     public void modifyPost(@PathVariable("postId") Long postId, PostRequest postRequest, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         postService.modify(postId, postRequest.title(), postRequest.content(), author);
     }
 
     @PreAuthorize("isAuthenticated()")
-    @DeleteMapping("/{postId}/delete")
+    @DeleteMapping("/{postId}")
     public void deletePost(@PathVariable("postId") Long postId, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         postService.delete(postId, author);

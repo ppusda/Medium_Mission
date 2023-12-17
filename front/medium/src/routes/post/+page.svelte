@@ -69,7 +69,7 @@
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`/md/post/popular_posts`);
+		const response = await fetch(`/md/post/popular-posts`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			hotPostListData = jsonResponse.content;

@@ -20,7 +20,7 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`/md/post/${postId}/modify`, {
+			const response = await fetch(`/md/post/${postId}`, {
 				method: 'PUT',
 				body: formData,
 			});

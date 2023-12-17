@@ -6,7 +6,7 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`/md/post/write`, {
+			const response = await fetch(`/md/post`, {
 				method: 'POST',
 				body: formData,
 			});
