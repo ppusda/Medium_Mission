@@ -6,7 +6,7 @@
 </script>
 
 
-<div>
+<div class="w-full">
 	<Header/>
 	{@render children()}
 </div>

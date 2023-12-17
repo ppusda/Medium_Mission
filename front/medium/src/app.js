@@ -33,5 +33,5 @@ export function toastNotice(msg) {
   const [_msg, ttl] = parseMsg(msg);
   if (ttl && parseInt(ttl) < new Date().getTime()) return;
 
-  toastr["success"](_msg, "성공");
+  toastr["success"](_msg, "알림");
 }

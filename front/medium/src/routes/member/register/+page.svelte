@@ -10,30 +10,28 @@
         method: 'POST',
         body: formData,
       });
+      console.log(response.json());
 
       if (!response.ok) {
-        const errorData = await response.json();
-        console.log(errorData);
-        if (errorData.email) {
-          toastWarning(errorData.email);
+        const validateData = await response.json();
+
+        if (validateData.email) {
+          toastWarning(validateData.email);
           return;
         }
-        if (errorData.password) {
-          toastWarning(errorData.password);
+        if (validateData.password) {
+          toastWarning(validateData.password);
           return;
         }
-        if (errorData.passwordConfirm) {
-          toastWarning(errorData.passwordConfirm);
+        if (validateData.passwordConfirm) {
+          toastWarning(validateData.passwordConfirm);
           return;
         }
-      } else {
-        console.log(response);
       }
 
       window.location.href = `/member/login`;
     }
   }
-
 
 </script>
 

@@ -4,23 +4,26 @@
   import Cookies from 'js-cookie';
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
-  let loginUserEmail = $state({});
+  let loginUsername = $state({});
   let loginCheck = $state({});
 
   async function memberCheck() {
     const response = await fetch(`/md/member/check`);
-    if (response) {
+    if (response.ok) {
       const data = await response.json();
 
       if (data.email) {
-        loginUserEmail = data.email.split('@')[0];
+        loginUsername = data.email.split('@')[0];
       }
 
       loginCheck = data.result;
+    } else {
+      toastWarning("로그인이 필요합니다.");
+      await logout();
     }
   }
 
-  async function moveToWriteQuestionPage() {
+  async function moveToWritePostPage() {
     await memberCheck();
     if (loginCheck) {
       window.location.href = '/post/write';
@@ -29,8 +32,8 @@
     toastWarning("로그인이 필요합니다.");
   }
 
-  function logoutProcess() {
-    logout();
+  async function logoutProcess() {
+    await logout();
     toastNotice("로그아웃 되었습니다.");
     window.location.href = '/';
   }
@@ -39,7 +42,6 @@
       method: 'DELETE',
     });
     Cookies.remove("accessToken");
-    await memberCheck();
   }
 
   onMount(async () => {
@@ -69,9 +71,9 @@
   <div class="navbar-end">
     {#if loginCheck}
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUserEmail} 님, 환영합니다!</div>
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUsername} 님, 환영합니다!</div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
-          <li><a on:click={moveToWriteQuestionPage}>글 작성</a></li>
+          <li><a on:click={moveToWritePostPage}>글 작성</a></li>
           <li><a>내가 쓴 글 보기</a></li>
           <li><a on:click={logoutProcess}>로그아웃</a></li>
         </ul>

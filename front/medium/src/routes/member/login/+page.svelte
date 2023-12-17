@@ -14,7 +14,6 @@
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
         if (errorData.email) {
           toastWarning(errorData.email);
           return;

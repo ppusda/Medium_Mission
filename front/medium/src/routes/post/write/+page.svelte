@@ -13,8 +13,13 @@
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				if (errorData.subject) {
-					toastWarning(errorData.subject);
+				if (errorData.title) {
+					toastWarning(errorData.title);
+					return;
+				}
+
+				if (errorData.content) {
+					toastWarning(errorData.content);
 					return;
 				}
 			}

@@ -23,10 +23,14 @@
 
 	async function memberCheck() {
 		const response = await fetch(`/md/member/check`);
-		if (response) {
+		if (response.ok) {
 			const data = await response.json();
+
+			if (data.email) {
+				loginUsername = data.email.split('@')[0];
+			}
+
 			loginCheck = data.result;
-			loginUsername = data.username;
 		}
 	}
 
@@ -34,7 +38,6 @@
 		const response = await fetch(`/md/post/${postId}`);
 		postData = await response.json();
 
-		console.log(postData);
 		if (postData.createDate) {
 			postData.createDate = formatDate(postData.createDate);
 		}
@@ -44,107 +47,37 @@
 		}
 	}
 
-	async function moveToModifyQuestionPage() {
+	async function moveToModifyPostPage() {
 		await memberCheck();
 		if (loginCheck) {
-			window.location.href = `/question/modify/${postId}`;
+			window.location.href = `/post/${postId}/modify`;
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function removeQuestion() {
+	async function removePost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/question/remove/${postId}`, {
-				method: 'POST',
+			await fetch(`/md/post/${postId}/delete`, {
+				method: 'DELETE',
 			});
-			window.location.href = `/question`;
+			window.location.href = `/post`;
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function voteQuestion() {
-		await memberCheck();
-		if (loginCheck) {
-			await fetch(`/md/question/vote/${postId}`, {
-				method: 'POST',
-			});
-			await getPost();
-			return;
-		}
-		toastWarning("로그인이 필요합니다.");
+	function goBack() {
+		window.history.back();
 	}
 
-	async function removeAnswer(answerId) {
+	async function recommendPost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/answer/remove/${answerId}`, {
+			await fetch(`/md/post/recommend/${postId}`, {
 				method: 'POST',
 			});
-			location
-			await getPost();
-			window.location.hash = `#`;
-			return;
-		}
-		toastWarning("로그인이 필요합니다.");
-	}
-
-	async function voteAnswer(answerId) {
-		await memberCheck();
-		if (loginCheck) {
-			await fetch(`/md/answer/vote/${answerId}`, {
-				method: 'POST',
-			});
-			await getPost();
-			window.location.hash=`#answer_${answerId}`
-			return;
-		}
-		toastWarning("로그인이 필요합니다.");
-	}
-
-	async function modifyHandleSubmit(event, answerId) {
-		event.preventDefault();
-		await memberCheck();
-		if (loginCheck) {
-			const formData = new FormData(event.target);
-			const response = await fetch(`/md/answer/modify/${answerId}`, {
-				method: 'POST',
-				body: formData,
-			});
-			console.log(response);
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				if (errorData.content) {
-					toastWarning(errorData.content);
-					return;
-				}
-			}
-			await getPost();
-			return;
-		}
-		toastWarning("로그인이 필요합니다.");
-	}
-
-	async function writeHandleSubmit(event) {
-		event.preventDefault();
-		await memberCheck();
-		if (loginCheck) {
-			const formData = new FormData(event.target);
-			const response = await fetch(`/md/answer/write/${postId}`, {
-				method: 'POST',
-				body: formData,
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				if (errorData.content) {
-					toastWarning(errorData.content);
-					return;
-				}
-			}
 			await getPost();
 			return;
 		}
@@ -167,47 +100,50 @@
 <section class="pl-10 pr-10">
 	<div class="flex flex-col">
 		<div class="flex flex-col content-center flex-wrap">
-			<h2 class="text-3xl font-bold py-2 m-5">{postData.title}</h2>
-			<div class="flex flex-col justify-start m-5">
-				<div class="flex flex-row">
-					<div class="badge badge-primary badge-outline mb-1.5">
-						{#if postData.author}
-							<a>{postData.author}</a>
-						{/if}
+			<h2 class="text-3xl font-bold m-5">
+				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
+				{postData.title}
+			</h2>
+			<div class="flex flex-row justify-between">
+				<div class="flex flex-col justify-start m-5">
+					<div class="flex flex-row">
+						<div class="badge badge-primary badge-outline mb-1.5">
+							{#if postData.author}
+								<a>{postData.author}</a>
+							{/if}
+						</div>
+					</div>
+					<div class="flex flex-row">
+						<div class="badge badge-primary badge-outline text-start mr-1.5">
+							작성일자: {postData.createDate}
+						</div>
+						<div class="badge badge-primary badge-outline text-start">
+							수정일자: {postData.modifiedDate}
+						</div>
 					</div>
 				</div>
-				<div class="flex flex-row">
-					<div class="badge badge-primary badge-outline text-start mr-1.5">
-						작성일자: {postData.createDate}
-					</div>
-					<div class="badge badge-primary badge-outline text-start">
-						수정일자: {postData.modifiedDate}
-					</div>
+				<div class="flex flex-row justify-end m-5">
+					{#if postData.author}
+						{#if loginUsername === postData.author}
+							<a class="btn btn-ghost border-white mr-3" on:click={moveToModifyPostPage}>수정</a>
+							<a href="#remove_post_modal" class="btn btn-ghost border-white">삭제</a>
+							<div class="modal" role="dialog" id="remove_post_modal">
+								<div class="modal-box">
+									<h3 class="font-bold text-lg">글 삭제</h3>
+									<span>정말로 삭제하시겠습니까?</span>
+									<div class="modal-action">
+										<a class="btn btn-error" on:click={removePost}>삭제</a>
+										<a href="#" class="btn btn-ghost">닫기</a>
+									</div>
+								</div>
+							</div>
+						{/if}
+					{/if}
 				</div>
 			</div>
 			<div class="card bg-base-100 shadow-xl border m-5 w-7/12">
 				<div class="card-body flex flex-col">
-					<p>{postData.content}</p>
-					<div class="flex flex-row justify-between mt-5">
-						<div class="flex flex-row justify-start">
-							{#if postData.author}
-								{#if loginUsername === postData.author}
-									<a class="btn btn-ghost border-white mr-3" on:click={moveToModifyQuestionPage}>수정</a>
-									<a href="#remove_question_modal" class="btn btn-ghost border-white">삭제</a>
-									<div class="modal" role="dialog" id="remove_question_modal">
-										<div class="modal-box">
-											<h3 class="font-bold text-lg">질문 삭제</h3>
-											<span>정말로 삭제하시겠습니까?</span>
-											<div class="modal-action">
-												<a class="btn btn-error" on:click={removeQuestion}>삭제</a>
-												<a href="#" class="btn btn-ghost">닫기</a>
-											</div>
-										</div>
-									</div>
-								{/if}
-							{/if}
-						</div>
-					</div>
+					<p style="white-space: pre-wrap;">{postData.content}</p>
 				</div>
 			</div>
 		</div>
