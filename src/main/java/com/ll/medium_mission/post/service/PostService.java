@@ -45,6 +45,7 @@ public class PostService {
     @Transactional
     public PostResponse getPostResponse(Long postId) {
         Post post = getPost(postId);
+        post.increaseViewCount();
 
         return PostResponse.builder()
                 .id(post.getId())
@@ -52,6 +53,7 @@ public class PostService {
                 .content(post.getContent())
                 .author(post.getAuthor().getEmail().split("@")[0])
                 .recommendCount((long) post.getPostRecommends().size())
+                .viewCount(post.getViewCount())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();

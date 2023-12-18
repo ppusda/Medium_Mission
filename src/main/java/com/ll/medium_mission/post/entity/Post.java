@@ -33,6 +33,9 @@ public class Post extends BaseEntity {
     @Column(columnDefinition = "text")
     private String content;
 
+    @Column
+    private Long viewCount;
+
     @ManyToOne
     @JoinColumn
     private Member author;
@@ -42,15 +45,20 @@ public class Post extends BaseEntity {
     private List<PostRecommend> postRecommends;
 
     @Builder
-    public Post(String title, String content, Member author) {
+    public Post(String title, String content, Member author, Long viewCount) {
         this.title = title;
         this.content = content;
         this.author = author;
+        this.viewCount = viewCount == null ? 0L : viewCount;
     }
 
     public void modifyPost(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void increaseViewCount() {
+        this.viewCount ++;
     }
 
 }

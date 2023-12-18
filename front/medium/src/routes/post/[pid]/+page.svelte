@@ -140,6 +140,7 @@
 				</div>
 				<div class="flex flex-row justify-end m-5">
 					<div class="flex flex-row items-center mr-5">
+						<p><i class="fa-solid fa-eye"></i> {postData.viewCount}</p>
 						{#if recommendCheck}
 							<a class="btn btn-ghost" on:click={recommendPost}><i class="fa-solid fa-thumbs-up fa-xl"></i></a>
 						{:else}
