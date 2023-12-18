@@ -125,7 +125,7 @@
 					<div class="flex flex-row">
 						<div class="badge badge-primary badge-outline mb-1.5">
 							{#if postData.author}
-								<a>{postData.author}</a>
+								<a href="/member/{postData.author}">{postData.author}</a>
 							{/if}
 						</div>
 					</div>

@@ -33,7 +33,8 @@ public class Member extends BaseEntity {
     @Builder
     public Member(String email, String nickname, String password) {
         this.email = email;
-        this.nickname = nickname == null ? email.split("@")[0] : nickname;
+        this.nickname = (nickname == null || nickname.isBlank()) ? email.split("@")[0] : nickname;
         this.password = password;
     }
+
 }

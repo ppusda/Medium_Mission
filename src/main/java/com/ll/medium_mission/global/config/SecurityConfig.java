@@ -44,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers(mvc.pattern("/member/check")).permitAll()
                                 .requestMatchers(mvc.pattern("/post")).permitAll()
                                 .requestMatchers(mvc.pattern("/post/{postId}")).permitAll()
+                                .requestMatchers(mvc.pattern("/post/{author}/posts")).permitAll()
                                 .requestMatchers(mvc.pattern("/member/join")).permitAll()
                                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                                 .anyRequest().authenticated()

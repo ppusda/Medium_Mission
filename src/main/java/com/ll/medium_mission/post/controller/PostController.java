@@ -45,10 +45,10 @@ public class PostController {
         return postService.getPosts(0);
     }
 
-    @GetMapping("/write-posts")
-    public Page<PostResponse> getMyPosts(@RequestParam("page") int page, Principal principal) {
-        Member author = memberService.getMember(principal.getName());
-        return postService.getAuthorsPosts(author, page);
+    @GetMapping("/{author}/posts")
+    public Page<PostResponse> getMyPosts(@RequestParam("page") int page, @PathVariable("author") String author) {
+        Member member = memberService.getMemberByNickname(author);
+        return postService.getAuthorsPosts(member, page);
     }
 
     @GetMapping("/{postId}")

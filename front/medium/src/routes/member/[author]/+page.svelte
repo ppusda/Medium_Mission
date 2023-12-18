@@ -1,12 +1,13 @@
 <script>
-	import {toastWarning, toastNotice} from "../../app.js";
+	import {toastWarning, toastNotice} from "../../../app.js";
 	import {onDestroy, onMount} from "svelte";
+	import {page} from "$app/stores";
 
 	const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 	let currentPage = $state({});
 	let totalPages = $state({});
 	let postListData = $state([]);
-	let hotPostListData = $state([]);
+	let author = $state({});
 
 	let loginCheck = $state({});
 	let loginUsername = $state({});
@@ -38,7 +39,6 @@
 		const response = await fetch(`/md/member/check`);
 		if (response.ok) {
 			const data = await response.json();
-
 			if (data.nickname) {
 				loginUsername = data.nickname;
 			}
@@ -47,17 +47,17 @@
 		}
 	}
 
-	async function moveToWritePostPage() {
+	async function moveToModifyMemberPage() {
 		await memberCheck();
 		if (loginCheck) {
-			window.location.href = '/post/write';
+			window.location.href = `/member/${author}/modify`;
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function getPostList() {
-		const response = await fetch(`/md/post?page=${currentPage}`);
+	async function getAuthorPostList() {
+		const response = await fetch(`/md/post/${author}/posts?page=${currentPage}`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			postListData = postListData.concat(jsonResponse.content);
@@ -68,19 +68,13 @@
 		}
 	}
 
-	async function getHotPostList() {
-		const response = await fetch(`/md/post/popular-posts`);
-		const jsonResponse = await response.json();
-		if (jsonResponse) {
-			hotPostListData = jsonResponse.content;
-		}
-	}
 
 	onMount(async () => {
 		currentPage = 0;
+		author = $page.params['author'];
 		window.addEventListener('scroll', handleScroll);
-		await getHotPostList();
-		await getPostList();
+		await memberCheck();
+		await getAuthorPostList();
 	});
 
 	onDestroy(() => {
@@ -98,32 +92,23 @@
 	<div class="flex flex-row w-full">
 		<div class="flex flex-col text-blue-400 sticky top-0 h-screen w-2/12">
 			<div class="m-5 ml-0 mb-0">
-				<p class="text-xl font-bold"><i class="fa-solid fa-star"></i> 읽어 볼 만한 글</p>
+				<p class="text-xl font-bold"><i class="fa-solid fa-address-card"></i> 프로필</p>
 			</div>
-			{#each hotPostListData as post}
-				<div class="flex flex-col gap-2 w-full">
-					<div class="h-min w-full mt-3">
-						<a href="/member/{post.author}">{post.author}</a>
-					</div>
-					<div class="h-min w-full">
-						<a class="text-xl font-bold" href="/post/{post.id}">{post.title}</a>
-					</div>
-					<hr class="border-primary mt-1.5 mr-5">
-				</div>
-			{/each}
 
 			<div class="card w-10/12 bg-neutral text-neutral-content mt-5 ml-0">
 				<div class="card-body">
-					<h2 class="card-title">Medium에서 글 써보기!</h2>
+					<h2 class="card-title">{author}</h2>
 					<div class="flex flex-col justify-center">
-						<a class="btn btn-ghost" href="/post/1">작성자를 위한 FAQ</a>
-						<a class="btn btn-ghost" href="/post/2">좋은 글을 위한 꿀팁</a>
-						<a class="btn" on:click={moveToWritePostPage}>글 작성 해보기!</a>
+						{#if loginUsername}
+							{#if loginUsername === author}
+								<a class="btn" on:click={moveToModifyMemberPage}>프로필 수정</a>
+							{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
 
-			<div class="flex flex-row m-5 ml-0">
+			<div class="flex flex-row items-end h-full m-5 ml-0">
 				<a href="https://github.com/ppusda/"><i class="fa-brands fa-github"></i> Developer</a>
 				<p class="ml-1.5 mr-1.5">/</p>
 				<a href="{repository_href}"><i class="fa-solid fa-book-bookmark"></i> Repository</a>
