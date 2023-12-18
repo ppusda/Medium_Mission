@@ -1,5 +1,6 @@
 package com.ll.medium_mission.global.util;
 
+import com.ll.medium_mission.global.provider.CookieProvider;
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
 import com.ll.medium_mission.token.entity.Token;
 import com.ll.medium_mission.token.service.TokenService;
@@ -11,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import javax.security.sasl.AuthenticationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final CookieProvider cookieProvider;
     private final TokenService tokenService;
 
     private String getJwtFromRequest(HttpServletRequest request) {
@@ -50,8 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             accessToken = jwtTokenProvider.createAccessToken(memberId);
 
-            Cookie cookie = new Cookie("accessToken", accessToken);
-            response.addCookie(cookie);
+            response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createCookie(accessToken).toString());
         }
 
         if (StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {

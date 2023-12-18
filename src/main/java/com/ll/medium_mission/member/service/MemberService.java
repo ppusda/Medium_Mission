@@ -22,12 +22,18 @@ public class MemberService {
 
     @Transactional
     public void join(String email, String password) {
-        Member member = Member.builder()
+        Optional<Member> member = memberRepository.findByEmail(email);
+
+        if (member.isPresent()) {
+            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+        }
+
+        Member joinMember = Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .build();
 
-        memberRepository.save(member);
+        memberRepository.save(joinMember);
     }
 
     @Transactional

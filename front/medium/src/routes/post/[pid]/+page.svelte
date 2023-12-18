@@ -40,8 +40,10 @@
 		const response = await fetch(`/md/post/${postId}/recommend`);
 		const responseData = await response.json();
 
-		recommendCheck = responseData.isRecommended;
-		console.log(responseData);
+		if (response.ok) {
+			recommendCheck = responseData.isRecommended;
+			return;
+		}
 	}
 
 	async function getPost() {
@@ -97,6 +99,8 @@
 
 	onMount(async () => {
 		postId = $page.params['pid'];
+		recommendCheck = false;
+
 		await memberCheck();
 		await getPost();
 		await checkRecommend();
