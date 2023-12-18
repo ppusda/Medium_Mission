@@ -72,7 +72,7 @@ class MemberControllerTest {
         String email = "test@naver.com";
         String password = "1234";
 
-        memberService.join(email, passwordEncoder.encode(password));
+        memberService.join(email, null, passwordEncoder.encode(password));
 
         mockMvc.perform(post("/member/login")
                         .param("email", "test@naver.com")

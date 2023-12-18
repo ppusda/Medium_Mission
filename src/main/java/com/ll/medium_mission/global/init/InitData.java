@@ -17,7 +17,6 @@ public class InitData {
 
     static final String email = "ppusda1234@gmail.com";
     static final String password = "ppusda1234";
-
     static final String FAQTitle = "미디엄에서 글을 작성해보고 싶으신가요? 여기서 시작해보세요!";
 
     static final String FAQContent = """
@@ -65,7 +64,7 @@ public class InitData {
 
     @Bean
     public CommandLineRunner demo(PostRepository postRepository) {
-        memberService.join(email, password);
+        memberService.join(email, null, password);
         Member member = memberService.getMember("1");
 
         return (args) -> {

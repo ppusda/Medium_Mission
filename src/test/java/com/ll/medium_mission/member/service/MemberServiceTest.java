@@ -42,7 +42,7 @@ class MemberServiceTest {
                 .passwordConfirm("1234")
                 .build();
 
-        memberService.join(memberJoinRequest.email(), memberJoinRequest.password());
+        memberService.join(memberJoinRequest.email(), null, memberJoinRequest.password());
 
         assertEquals(memberRepository.count(), 1L);
     }
@@ -56,7 +56,7 @@ class MemberServiceTest {
                 .passwordConfirm("1234")
                 .build();
 
-        memberService.join(memberJoinRequest.email(), passwordEncoder.encode(memberJoinRequest.password()));
+        memberService.join(memberJoinRequest.email(), null, passwordEncoder.encode(memberJoinRequest.password()));
         memberService.login(memberJoinRequest.email(), memberJoinRequest.password());
     }
 }

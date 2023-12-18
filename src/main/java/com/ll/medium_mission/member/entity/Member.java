@@ -24,12 +24,16 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String email;
 
+    @Column(unique = true, length = 30)
+    private String nickname;
+
     @Column
     private String password;
 
     @Builder
-    public Member(String email, String password) {
+    public Member(String email, String nickname, String password) {
         this.email = email;
+        this.nickname = nickname == null ? email.split("@")[0] : nickname;
         this.password = password;
     }
 }

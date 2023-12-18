@@ -21,7 +21,7 @@ public class MemberService {
     private final TokenService tokenService;
 
     @Transactional
-    public void join(String email, String password) {
+    public void join(String email, String nickname, String password) {
         Optional<Member> member = memberRepository.findByEmail(email);
 
         if (member.isPresent()) {
@@ -30,6 +30,7 @@ public class MemberService {
 
         Member joinMember = Member.builder()
                 .email(email)
+                .nickname(nickname)
                 .password(passwordEncoder.encode(password))
                 .build();
 
@@ -55,7 +56,16 @@ public class MemberService {
 
     @Transactional
     public Member getMember(String id) {
-        Optional<Member> member = this.memberRepository.findById(Long.parseLong(id));
+        Optional<Member> member = memberRepository.findById(Long.parseLong(id));
+        if (member.isEmpty()) {
+            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+        }
+        return member.get();
+    }
+
+    @Transactional
+    public Member getMemberByNickname(String nickname) {
+        Optional<Member> member = memberRepository.findByNickname(nickname);
         if (member.isEmpty()) {
             throw new IllegalArgumentException("존재하지 않는 회원입니다.");
         }

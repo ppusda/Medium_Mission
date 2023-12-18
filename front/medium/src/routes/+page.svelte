@@ -12,8 +12,8 @@
 		if (response.ok) {
 			const data = await response.json();
 
-			if (data.email) {
-				loginUsername = data.email.split('@')[0];
+			if (data.nickname) {
+				loginUsername = data.nickname;
 			}
 
 			loginCheck = data.result;

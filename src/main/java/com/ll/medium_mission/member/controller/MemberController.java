@@ -37,7 +37,7 @@ public class MemberController {
             return validateUtil.getErrors(bindingResult);
         }
 
-        memberService.join(memberJoinRequest.email(), memberJoinRequest.password());
+        memberService.join(memberJoinRequest.email(), memberJoinRequest.nickname(), memberJoinRequest.password());
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +63,7 @@ public class MemberController {
             Member member = memberService.getMember(principal.getName());
 
             return MemberCheckResponse.builder()
-                    .email(member.getEmail())
+                    .nickname(member.getNickname())
                     .result(true)
                     .build();
         }

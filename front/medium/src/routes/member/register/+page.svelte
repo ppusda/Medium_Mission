@@ -19,6 +19,10 @@
           toastWarning(validateData.email);
           return;
         }
+        if (validateData.nickname) {
+          toastWarning(validateData.nickname);
+          return;
+        }
         if (validateData.password) {
           toastWarning(validateData.password);
           return;
@@ -45,8 +49,12 @@
     <h2 class="text-3xl font-bold border-bottom py-2 m-5">회원 가입</h2>
     <form on:submit={handleSubmit} method="post">
       <div class="flex flex-col m-5">
-        <label for="username" class="form-label">이메일</label>
+        <label for="email" class="form-label">이메일</label>
         <input class="input input-bordered input-primary mt-3 max-w-full" name="email" id="email" type="text" placeholder="이메일을 입력해주세요."/>
+      </div>
+      <div class="flex flex-col m-5">
+        <label for="nickname" class="form-label">닉네임</label>
+        <input class="input input-bordered input-primary mt-3 max-w-full" name="nickname" id="nickname" type="text" placeholder="닉네임을 입력해주세요."/>
       </div>
       <div class="flex flex-col m-5">
         <label for="password" class="form-label">비밀번호</label>
