@@ -5,6 +5,7 @@ import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.post.dto.PostRequest;
 import com.ll.medium_mission.post.dto.PostResponse;
+import com.ll.medium_mission.post.dto.RecommendCheckResponse;
 import com.ll.medium_mission.post.entity.Post;
 import com.ll.medium_mission.post.service.PostRecommendService;
 import com.ll.medium_mission.post.service.PostService;
@@ -80,5 +81,21 @@ public class PostController {
     public void deletePost(@PathVariable("postId") Long postId, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         postService.delete(postId, author);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{postId}/recommend")
+    public void recommendPost(@PathVariable("postId") Long postId, Principal principal) {
+        Post post = postService.getPost(postId);
+        Member member = memberService.getMember(principal.getName());
+        postRecommendService.recommend(post, member);
+    }
+
+    @GetMapping("/{postId}/recommend")
+    public RecommendCheckResponse recommendCheck(@PathVariable("postId") Long postId, Principal principal) {
+        Member member = memberService.getMember(principal.getName());
+        return RecommendCheckResponse.builder()
+                .isRecommended(postRecommendService.recommendCheck(postId, member.getId()))
+                .build();
     }
 }

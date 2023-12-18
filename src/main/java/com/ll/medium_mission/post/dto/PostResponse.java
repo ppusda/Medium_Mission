@@ -9,6 +9,7 @@ public record PostResponse(
         String content,
         String title,
         String author,
+        Long recommendCount,
         LocalDateTime createDate,
         LocalDateTime modifiedDate){
 }

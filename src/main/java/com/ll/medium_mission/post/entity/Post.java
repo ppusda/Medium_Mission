@@ -1,7 +1,9 @@
 package com.ll.medium_mission.post.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ll.medium_mission.global.entity.BaseEntity;
 import com.ll.medium_mission.member.entity.Member;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -10,6 +12,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +36,10 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn
     private Member author;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<PostRecommend> postRecommends;
 
     @Builder
     public Post(String title, String content, Member author) {

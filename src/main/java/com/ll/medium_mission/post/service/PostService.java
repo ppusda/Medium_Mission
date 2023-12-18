@@ -51,6 +51,7 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getEmail().split("@")[0])
+                .recommendCount((long) post.getPostRecommends().size())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();
@@ -95,6 +96,7 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getEmail().split("@")[0])
+                .recommendCount((long) post.getPostRecommends().size())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build());

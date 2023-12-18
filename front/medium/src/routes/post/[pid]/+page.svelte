@@ -7,6 +7,8 @@
 	let postData = $state({});
 	let answerCount = $state({});
 
+	let recommendCheck = $state({});
+
 	let loginCheck = $state({});
 	let loginUsername = $state({});
 
@@ -32,6 +34,14 @@
 
 			loginCheck = data.result;
 		}
+	}
+
+	async function checkRecommend() {
+		const response = await fetch(`/md/post/${postId}/recommend`);
+		const responseData = await response.json();
+
+		recommendCheck = responseData.isRecommended;
+		console.log(responseData);
 	}
 
 	async function getPost() {
@@ -75,10 +85,11 @@
 	async function recommendPost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/post/recommend/${postId}`, {
+			await fetch(`/md/post/${postId}/recommend`, {
 				method: 'POST',
 			});
 			await getPost();
+			await checkRecommend();
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
@@ -88,6 +99,7 @@
 		postId = $page.params['pid'];
 		await memberCheck();
 		await getPost();
+		await checkRecommend();
 	});
 
 </script>
@@ -117,12 +129,20 @@
 						<div class="badge badge-primary badge-outline text-start mr-1.5">
 							작성일자: {postData.createDate}
 						</div>
-						<div class="badge badge-primary badge-outline text-start">
+						<div class="badge badge-primary badge-outline text-start mr-1.5">
 							수정일자: {postData.modifiedDate}
 						</div>
 					</div>
 				</div>
 				<div class="flex flex-row justify-end m-5">
+					<div class="flex flex-row items-center mr-5">
+						{#if recommendCheck}
+							<a class="btn btn-ghost" on:click={recommendPost}><i class="fa-solid fa-thumbs-up fa-xl"></i></a>
+						{:else}
+							<a class="btn btn-ghost" on:click={recommendPost}><i class="fa-regular fa-thumbs-up fa-xl"></i></a>
+						{/if}
+						<p>{postData.recommendCount}</p>
+					</div>
 					{#if postData.author}
 						{#if loginUsername === postData.author}
 							<a class="btn btn-ghost border-white mr-3" on:click={moveToModifyPostPage}>수정</a>
