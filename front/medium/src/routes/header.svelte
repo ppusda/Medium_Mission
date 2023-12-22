@@ -9,8 +9,10 @@
 
   async function memberCheck() {
     const response = await fetch(`/md/member/check`);
+
     if (response.ok) {
       const data = await response.json();
+      console.log(data);
 
       if (data.nickname) {
         loginUsername = data.nickname;
