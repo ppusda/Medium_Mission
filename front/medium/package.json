@@ -40,7 +40,6 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"js-cookie": "^3.0.5",
 		"toastr": "^2.1.4"
 	}
 }

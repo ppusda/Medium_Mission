@@ -1,15 +1,19 @@
 package com.ll.medium_mission.member.controller;
 
+import com.ll.medium_mission.global.provider.CookieProvider;
 import com.ll.medium_mission.global.util.ValidateUtil;
 import com.ll.medium_mission.member.dto.MemberCheckResponse;
 import com.ll.medium_mission.member.dto.MemberJoinRequest;
 import com.ll.medium_mission.member.dto.MemberLoginRequest;
+import com.ll.medium_mission.member.dto.MemberLoginResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.member.validator.JoinValidator;
+import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CookieProvider cookieProvider;
     private final JoinValidator joinValidator;
     private final ValidateUtil validateUtil;
 
@@ -47,14 +52,32 @@ public class MemberController {
             return validateUtil.getErrors(bindingResult);
         }
 
-        return ResponseEntity.ok(memberService.login(memberLoginRequest.email(), memberLoginRequest.password()));
+        MemberLoginResponse memberLoginResponse = memberService.login(memberLoginRequest.email(), memberLoginRequest.password());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, String.valueOf(
+                        cookieProvider.createAccessTokenCookie(memberLoginResponse.accessToken()))
+                )
+                .header(HttpHeaders.SET_COOKIE, String.valueOf(
+                        cookieProvider.createRefreshTokenCookie(memberLoginResponse.refreshToken()))
+                )
+                .build();
     }
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/logout")
-    public void logoutMember(Principal principal) {
+    public ResponseEntity<?> logoutMember(Principal principal) {
         SecurityContextHolder.clearContext();
         memberService.logout(principal.getName());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, String.valueOf(
+                        cookieProvider.removeToken("accessToken"))
+                )
+                .header(HttpHeaders.SET_COOKIE, String.valueOf(
+                        cookieProvider.removeToken("refreshToken"))
+                )
+                .build();
     }
 
     @GetMapping("/check")

@@ -51,6 +51,7 @@ public class MemberService {
 
         return MemberLoginResponse.builder()
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 

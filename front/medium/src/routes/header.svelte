@@ -43,7 +43,6 @@
     await fetch(`/md/member/logout`, {
       method: 'DELETE',
     });
-    Cookies.remove("accessToken");
   }
 
   onMount(async () => {

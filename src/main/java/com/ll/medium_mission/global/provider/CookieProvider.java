@@ -7,15 +7,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class CookieProvider {
 
-    public ResponseCookie createCookie(String accessToken) {
+    public ResponseCookie createAccessTokenCookie(String accessToken) {
 
         return ResponseCookie.from("accessToken", accessToken)
                 .domain("localhost")
                 .path("/")
-                .httpOnly(false) // javascript가 cookie 값에 접근하지 못하게 하는 설정.
-                .secure(false)
-                .maxAge(Duration.ofHours(3))
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(Duration.ofMinutes(30))
                 .sameSite("Strict")
+                .build();
+    }
+
+    public ResponseCookie createRefreshTokenCookie(String refreshToken) {
+
+        return ResponseCookie.from("refreshToken", refreshToken)
+                .domain("localhost")
+                .path("/")
+                .httpOnly(true)
+                .secure(true)
+                .maxAge(Duration.ofDays(1))
+                .sameSite("Strict")
+                .build();
+    }
+
+    public ResponseCookie removeToken(String cookieName) {
+        return ResponseCookie.from(cookieName, null)
+                .domain("localhost")
+                .path("/")
+                .maxAge(0)
                 .build();
     }
 }

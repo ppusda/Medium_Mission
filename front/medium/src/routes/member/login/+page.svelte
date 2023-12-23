@@ -25,8 +25,6 @@
         }
       }
 
-      const data = await response.json();
-      Cookies.set("accessToken", data.accessToken);
       window.location.href = `/`;
     }
   }
