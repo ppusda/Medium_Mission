@@ -27,11 +27,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final CookieProvider cookieProvider;
     private final TokenService tokenService;
 
-    private String getJwtFromRequest(HttpServletRequest request) {
+    private String getTokenFromRequest(HttpServletRequest request, String tokenName) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("accessToken")) {
+                if (cookie.getName().equals(tokenName)) {
                     return cookie.getValue();
                 }
             }
@@ -41,27 +41,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = getJwtFromRequest(request);
+        String accessToken = getTokenFromRequest(request, "accessToken");
 
-        if (StringUtils.hasText(accessToken) && !jwtTokenProvider.validateToken(accessToken)) {
+        if (!StringUtils.hasText(accessToken)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        if (!jwtTokenProvider.validateToken(accessToken)){
             String memberId = jwtTokenProvider.getClaims(accessToken).getSubject();
+            String refreshToken = getTokenFromRequest(request, "refreshToken");
             Token token = tokenService.getToken(memberId);
 
-            if (!jwtTokenProvider.validateToken(token.getRefreshToken())) {
-                throw new AuthenticationException("로그인이 필요합니다.");
+            if (!StringUtils.hasText(refreshToken)) {
+                tokenService.deleteToken(memberId);
+                throw new AuthenticationException("잘못된 접근입니다. 재로그인이 필요합니다.");
+            }
+
+            if (!refreshToken.equals(token.getRefreshToken()) || !jwtTokenProvider.validateToken(token.getRefreshToken())) {
+                throw new AuthenticationException("재로그인이 필요합니다.");
             }
 
             accessToken = jwtTokenProvider.createAccessToken(memberId);
+            refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
-            response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createCookie(accessToken).toString());
+            tokenService.deleteToken(memberId);
+            tokenService.register(refreshToken, Long.valueOf(memberId));
+
+            response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createAccessTokenCookie(accessToken).toString());
+            response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createRefreshTokenCookie(refreshToken).toString());
         }
 
-        if (StringUtils.hasText(accessToken) && jwtTokenProvider.validateToken(accessToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
-
 }
