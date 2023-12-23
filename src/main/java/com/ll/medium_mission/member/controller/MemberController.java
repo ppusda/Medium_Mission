@@ -6,10 +6,10 @@ import com.ll.medium_mission.member.dto.MemberCheckResponse;
 import com.ll.medium_mission.member.dto.MemberJoinRequest;
 import com.ll.medium_mission.member.dto.MemberLoginRequest;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
+import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.member.validator.JoinValidator;
-import jakarta.servlet.http.Cookie;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -94,5 +94,11 @@ public class MemberController {
         return MemberCheckResponse.builder()
                 .result(false)
                 .build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/profile")
+    public MemberResponse getProfile(Principal principal) {
+        return memberService.getMemberResponse(principal.getName());
     }
 }

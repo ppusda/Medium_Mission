@@ -2,6 +2,7 @@ package com.ll.medium_mission.member.service;
 
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
+import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
 import com.ll.medium_mission.token.service.TokenService;
@@ -75,6 +76,15 @@ public class MemberService {
 
     public void logout(String memberId) {
         tokenService.deleteToken(memberId);
+    }
+
+    @Transactional
+    public MemberResponse getMemberResponse(String memberId) {
+        Member member = getMember(memberId);
+        return MemberResponse.builder()
+                .email(member.getEmail())
+                .nickname(member.getNickname())
+                .build();
     }
 
     private void checkPassword(Member member, String password) {
