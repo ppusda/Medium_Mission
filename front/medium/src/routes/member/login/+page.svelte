@@ -1,6 +1,5 @@
 <script>
   import {toastWarning} from "../../../app.js";
-  import Cookies from 'js-cookie';
 
   async function handleSubmit(event) {
     event.preventDefault();

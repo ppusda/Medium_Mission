@@ -1,7 +1,6 @@
 <script>
   import {toastNotice, toastWarning} from "../app.js";
   import {onMount} from "svelte";
-  import Cookies from 'js-cookie';
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
   let loginUsername = $state({});
