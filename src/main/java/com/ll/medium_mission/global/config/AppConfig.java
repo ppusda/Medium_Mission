@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class AppConfig {
 
     public byte[] jwtKey;
+    public String domain;
 
     public void setJwtKey(String jwtKey) {
         this.jwtKey = Base64.getDecoder().decode(jwtKey);

@@ -1,16 +1,22 @@
 package com.ll.medium_mission.global.provider;
 
+import com.ll.medium_mission.global.config.AppConfig;
 import java.time.Duration;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CookieProvider {
+    private final String domain;
+
+    public CookieProvider(AppConfig appConfig) {
+        this.domain = appConfig.getDomain();
+    }
 
     public ResponseCookie createAccessTokenCookie(String accessToken) {
 
         return ResponseCookie.from("accessToken", accessToken)
-                .domain("localhost")
+                .domain(domain)
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
@@ -22,7 +28,7 @@ public class CookieProvider {
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
 
         return ResponseCookie.from("refreshToken", refreshToken)
-                .domain("localhost")
+                .domain(domain)
                 .path("/")
                 .httpOnly(true)
                 .secure(true)
@@ -33,7 +39,7 @@ public class CookieProvider {
 
     public ResponseCookie removeToken(String cookieName) {
         return ResponseCookie.from(cookieName, null)
-                .domain("localhost")
+                .domain(domain)
                 .path("/")
                 .maxAge(0)
                 .build();
