@@ -12,12 +12,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
 @SpringBootTest
+@DirtiesContext
 class MemberServiceTest {
 
     @Autowired
@@ -28,6 +30,12 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @BeforeEach
+    public void before() {
+        memberService.deleteAll();
+    }
+
 
     @Test
     @DisplayName("회원 join 기능이 정상적으로 작동한다.")
@@ -40,7 +48,7 @@ class MemberServiceTest {
 
         memberService.join(memberJoinRequest.email(), null, memberJoinRequest.password());
 
-        assertEquals(memberRepository.count(), 2L);
+        assertEquals(memberRepository.count(), 1L);
     }
 
     @Test
@@ -52,6 +60,7 @@ class MemberServiceTest {
                 .passwordConfirm("1234")
                 .build();
 
+        memberService.join(memberJoinRequest.email(), null, passwordEncoder.encode(memberJoinRequest.password()));
         memberService.login(memberJoinRequest.email(), memberJoinRequest.password());
     }
 }

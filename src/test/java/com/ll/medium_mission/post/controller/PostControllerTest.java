@@ -20,10 +20,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
 @SpringBootTest
+@DirtiesContext
 @AutoConfigureMockMvc
 class PostControllerTest {
 
@@ -34,7 +38,15 @@ class PostControllerTest {
     private MemberService memberService;
 
     @Autowired
+    private TokenService tokenService;
+
+    @Autowired
     private PostService postService;
+
+    @BeforeEach
+    public void before() {
+        tokenService.deleteAll();
+    }
 
     @Test
     @DisplayName("1 페이지 글 조회가 정상적으로 이루어진다.")
@@ -51,6 +63,7 @@ class PostControllerTest {
     @DisplayName("특정 유저가 쓴 글에 대한 1 페이지 글 조회가 정상적으로 이루어진다.")
     void getMyPosts() throws Exception {
         Member member = memberService.getMember("1");
+        postService.write("제목입니다.", "내용입니다.", member);
 
         mockMvc.perform(get("/post/" + member.getNickname() + "/posts?page=0"))
                 .andExpect(status().isOk())
@@ -60,8 +73,6 @@ class PostControllerTest {
     @Test
     @DisplayName("글 상세 조회가 정상적으로 이루어진다.")
     void getPostDetail() throws Exception {
-        Member member = memberService.getMember("1");
-
         mockMvc.perform(get("/post/1"))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -97,7 +108,7 @@ class PostControllerTest {
         Member member = memberService.getMember("1");
         MemberLoginResponse memberLoginResponse = memberService.login(member.getEmail(), "ppusda1234");
 
-        mockMvc.perform(put("/post/1")
+        mockMvc.perform(put("/post/3")
                         .cookie(new Cookie("accessToken", memberLoginResponse.accessToken()))
                         .param("title", "제목입니다~")
                         .param("content", "내용입니다~"))
@@ -121,7 +132,7 @@ class PostControllerTest {
         Member member = memberService.getMember("1");
         MemberLoginResponse memberLoginResponse = memberService.login(member.getEmail(), "ppusda1234");
 
-        mockMvc.perform(delete("/post/1")
+        mockMvc.perform(delete("/post/3")
                         .cookie(new Cookie("accessToken", memberLoginResponse.accessToken())))
                 .andExpect(status().isOk())
                 .andDo(print());

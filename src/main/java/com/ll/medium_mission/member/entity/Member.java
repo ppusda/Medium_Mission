@@ -1,12 +1,16 @@
 package com.ll.medium_mission.member.entity;
 
 import com.ll.medium_mission.global.entity.BaseEntity;
+import com.ll.medium_mission.post.entity.Post;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +33,9 @@ public class Member extends BaseEntity {
 
     @Column
     private String password;
+
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    private List<Post> posts;
 
     @Builder
     public Member(String email, String nickname, String password) {
