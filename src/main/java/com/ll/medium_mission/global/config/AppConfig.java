@@ -15,4 +15,7 @@ public class AppConfig {
         this.jwtKey = Base64.getDecoder().decode(jwtKey);
     }
 
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 }

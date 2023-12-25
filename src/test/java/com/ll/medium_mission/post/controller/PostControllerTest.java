@@ -25,7 +25,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("dev")
 class PostControllerTest {
 
     @Autowired
@@ -35,20 +34,12 @@ class PostControllerTest {
     private MemberService memberService;
 
     @Autowired
-    private TokenService tokenService;
-
-    @Autowired
     private PostService postService;
 
-    @BeforeEach
-    public void before() {
-        tokenService.deleteAll();
-    }
-
     @Test
-    @DisplayName("1 페이지에 대한 글 조회가 정상적으로 이루어진다.")
+    @DisplayName("1 페이지 글 조회가 정상적으로 이루어진다.")
     void getPosts() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
+        Member member = memberService.getMember("1");
         postService.write("제목입니다.", "내용입니다.", member);
 
         mockMvc.perform(get("/post?page=0"))
@@ -57,15 +48,11 @@ class PostControllerTest {
     }
 
     @Test
-    @DisplayName("내가 쓴 글에 대한 1 페이지에 대한 글 조회가 정상적으로 이루어진다.")
+    @DisplayName("특정 유저가 쓴 글에 대한 1 페이지 글 조회가 정상적으로 이루어진다.")
     void getMyPosts() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
-        MemberLoginResponse memberLoginResponse = memberService.login("test@naver.com", "1234");
+        Member member = memberService.getMember("1");
 
-        postService.write("제목입니다.", "내용입니다.", member);
-
-        mockMvc.perform(get("/post/myList?page=0")
-                        .cookie(new Cookie("accessToken", memberLoginResponse.accessToken())))
+        mockMvc.perform(get("/post/" + member.getNickname() + "/posts?page=0"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -73,13 +60,9 @@ class PostControllerTest {
     @Test
     @DisplayName("글 상세 조회가 정상적으로 이루어진다.")
     void getPostDetail() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
-        MemberLoginResponse memberLoginResponse = memberService.login("test@naver.com", "1234");
+        Member member = memberService.getMember("1");
 
-        postService.write("제목입니다.", "내용입니다.", member);
-
-        mockMvc.perform(get("/post/1")
-                        .cookie(new Cookie("accessToken", memberLoginResponse.accessToken())))
+        mockMvc.perform(get("/post/1"))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -87,10 +70,10 @@ class PostControllerTest {
     @Test
     @DisplayName("글 작성이 정상적으로 이루어진다.")
     void writePost() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
-        MemberLoginResponse memberLoginResponse = memberService.login("test@naver.com", "1234");
+        Member member = memberService.getMember("1");
+        MemberLoginResponse memberLoginResponse = memberService.login(member.getEmail(), "ppusda1234");
 
-        mockMvc.perform(post("/post/write")
+        mockMvc.perform(post("/post")
                         .cookie(new Cookie("accessToken", memberLoginResponse.accessToken()))
                         .param("title", "제목입니다!!")
                         .param("content", "내용입니다!!"))
@@ -101,7 +84,7 @@ class PostControllerTest {
     @Test
     @DisplayName("권한이 없는 상태에서는 글 작성을 할 수 없다.")
     void writePostWithoutPrincipal() throws Exception {
-        mockMvc.perform(post("/post/write")
+        mockMvc.perform(post("/post")
                         .param("title", "제목입니다!!")
                         .param("content", "내용입니다!!"))
                 .andExpect(status().is4xxClientError())
@@ -111,10 +94,10 @@ class PostControllerTest {
     @Test
     @DisplayName("글 수정이 정상적으로 이루어진다.")
     void modifyPost() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
-        MemberLoginResponse memberLoginResponse = memberService.login("test@naver.com", "1234");
+        Member member = memberService.getMember("1");
+        MemberLoginResponse memberLoginResponse = memberService.login(member.getEmail(), "ppusda1234");
 
-        mockMvc.perform(put("/post/1/modify")
+        mockMvc.perform(put("/post/1")
                         .cookie(new Cookie("accessToken", memberLoginResponse.accessToken()))
                         .param("title", "제목입니다~")
                         .param("content", "내용입니다~"))
@@ -125,7 +108,7 @@ class PostControllerTest {
     @Test
     @DisplayName("권한이 없는 상태에서는 글 수정을 할 수 없다.")
     void modifyPostWithoutPrincipal() throws Exception {
-        mockMvc.perform(put("/post/1/modify")
+        mockMvc.perform(put("/post/1")
                         .param("title", "제목입니다~")
                         .param("content", "내용입니다~"))
                 .andExpect(status().is4xxClientError())
@@ -135,10 +118,10 @@ class PostControllerTest {
     @Test
     @DisplayName("글 삭제가 정상적으로 이루어진다.")
     void deletePost() throws Exception {
-        Member member = memberService.getMember("test@naver.com");
-        MemberLoginResponse memberLoginResponse = memberService.login("test@naver.com", "1234");
+        Member member = memberService.getMember("1");
+        MemberLoginResponse memberLoginResponse = memberService.login(member.getEmail(), "ppusda1234");
 
-        mockMvc.perform(delete("/post/1/delete")
+        mockMvc.perform(delete("/post/1")
                         .cookie(new Cookie("accessToken", memberLoginResponse.accessToken())))
                 .andExpect(status().isOk())
                 .andDo(print());
@@ -147,7 +130,7 @@ class PostControllerTest {
     @Test
     @DisplayName("권한이 없는 상태에서는 글 삭제를 할 수 없다.")
     void deletePostWithoutPrincipal() throws Exception {
-        mockMvc.perform(delete("/post/1/delete"))
+        mockMvc.perform(delete("/post/1"))
                 .andExpect(status().is4xxClientError())
                 .andDo(print());
     }

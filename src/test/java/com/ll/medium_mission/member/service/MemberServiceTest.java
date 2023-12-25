@@ -18,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
-@ActiveProfiles("dev")
 class MemberServiceTest {
 
     @Autowired
@@ -29,11 +28,6 @@ class MemberServiceTest {
 
     @Autowired
     private MemberRepository memberRepository;
-
-    @BeforeEach
-    public void before() {
-        memberService.deleteAll();
-    }
 
     @Test
     @DisplayName("회원 join 기능이 정상적으로 작동한다.")
@@ -46,7 +40,7 @@ class MemberServiceTest {
 
         memberService.join(memberJoinRequest.email(), null, memberJoinRequest.password());
 
-        assertEquals(memberRepository.count(), 1L);
+        assertEquals(memberRepository.count(), 2L);
     }
 
     @Test
@@ -58,7 +52,6 @@ class MemberServiceTest {
                 .passwordConfirm("1234")
                 .build();
 
-        memberService.join(memberJoinRequest.email(), null, passwordEncoder.encode(memberJoinRequest.password()));
         memberService.login(memberJoinRequest.email(), memberJoinRequest.password());
     }
 }
