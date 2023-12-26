@@ -9,9 +9,11 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/md/": {
-				target: "http://localhost:8080",
+				// target: "http://localhost:8080",
+				target: "https://medium-api.bbgk.me",
 				rewrite: (path) => path.replace(/^\/md/, ""),
 			},
+
 		},
 	},
 });
