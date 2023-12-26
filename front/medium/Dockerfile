@@ -1,6 +1,6 @@
 # 1단계: 빌드 환경 설정
 # Node.js 공식 이미지를 사용하여 빌드 스테이지를 생성
-FROM node:16-alpine AS build
+FROM node:18-alpine AS build
 
 # 작업 디렉토리 설정
 WORKDIR /app
