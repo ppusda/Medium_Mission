@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 
 # 의존성 설치
-RUN npm install
+RUN npm install --force --legacy-peer-deps
 
 # 애플리케이션 소스 복사
 COPY . .
