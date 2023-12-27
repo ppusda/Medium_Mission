@@ -10,7 +10,7 @@ export default defineConfig({
 		proxy: {
 			"/md/": {
 				// target: "http://localhost:8080",
-				target: "https://medium-api.bbgk.me",
+				target: "http://172.17.0.1:8080",
 				rewrite: (path) => path.replace(/^\/md/, ""),
 			},
 
