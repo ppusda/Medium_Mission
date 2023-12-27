@@ -21,7 +21,7 @@ public class CookieProvider {
                 .httpOnly(true)
                 .secure(true)
                 .maxAge(Duration.ofMinutes(30))
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
@@ -33,7 +33,7 @@ public class CookieProvider {
                 .httpOnly(true)
                 .secure(true)
                 .maxAge(Duration.ofDays(1))
-                .sameSite("Strict")
+                .sameSite("None")
                 .build();
     }
 
