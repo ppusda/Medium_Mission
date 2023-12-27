@@ -8,7 +8,7 @@
 	let postCount = $state({});
 
 	async function memberCheck() {
-		const response = await fetch(`/md/member/check`);
+		const response = await fetch(`https://medium-api.bbgk.me/member/check`);
 		if (response.ok) {
 			const data = await response.json();
 
@@ -21,7 +21,7 @@
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`/md/post/popular-posts`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/popular-posts`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			postListData = jsonResponse.content;

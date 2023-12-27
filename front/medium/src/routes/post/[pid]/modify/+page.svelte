@@ -7,7 +7,7 @@
 	let postData = $state({});
 
 	async function getPost() {
-		const response = await fetch(`/md/post/${postId}`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`);
 		postData = await response.json();
 	}
 
@@ -20,7 +20,7 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`/md/post/${postId}`, {
+			const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
 				method: 'PUT',
 				body: formData,
 			});

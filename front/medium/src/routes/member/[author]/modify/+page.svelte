@@ -11,7 +11,7 @@
   let loginUsername = $state({});
 
   async function memberCheck() {
-    const response = await fetch(`/md/member/check`);
+    const response = await fetch(`https://medium-api.bbgk.me/member/check`);
     if (response.ok) {
       const data = await response.json();
       if (data.nickname) {
@@ -32,7 +32,7 @@
   }
 
   async function getMember() {
-    const response = await fetch(`/md/member/profile`);
+    const response = await fetch(`https://medium-api.bbgk.me/member/profile`);
     memberData = await response.json();
   }
 
@@ -41,7 +41,7 @@
     const formData = new FormData(event.target);
 
     if (formData) {
-      const response = await fetch(`/md/member/modify`, {
+      const response = await fetch(`https://medium-api.bbgk.me/member/modify`, {
         method: 'POST',
         body: formData,
       });

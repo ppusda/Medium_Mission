@@ -35,7 +35,7 @@
 	}
 
 	async function memberCheck() {
-		const response = await fetch(`/md/member/check`);
+		const response = await fetch(`https://medium-api.bbgk.me/member/check`);
 		if (response.ok) {
 			const data = await response.json();
 
@@ -57,7 +57,7 @@
 	}
 
 	async function getPostList() {
-		const response = await fetch(`/md/post?page=${currentPage}`);
+		const response = await fetch(`https://medium-api.bbgk.me/post?page=${currentPage}`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			postListData = postListData.concat(jsonResponse.content);
@@ -69,7 +69,7 @@
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`/md/post/popular-posts`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/popular-posts`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			hotPostListData = jsonResponse.content;

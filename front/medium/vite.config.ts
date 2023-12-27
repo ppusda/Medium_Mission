@@ -9,11 +9,12 @@ export default defineConfig({
 	server: {
 		proxy: {
 			"/md/": {
-				// target: "http://localhost:8080",
-				target: "http://172.17.0.1:8080",
+				target: "http://localhost:8080",
 				rewrite: (path) => path.replace(/^\/md/, ""),
 			},
-
 		},
 	},
 });
+
+// vite 설정은 개발 모드에서만 사용된다.
+// 실제 build 시에는 제외 됨.

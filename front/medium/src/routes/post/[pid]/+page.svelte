@@ -24,7 +24,7 @@
 	}
 
 	async function memberCheck() {
-		const response = await fetch(`/md/member/check`);
+		const response = await fetch(`https://medium-api.bbgk.me/member/check`);
 		if (response.ok) {
 			const data = await response.json();
 
@@ -37,7 +37,7 @@
 	}
 
 	async function checkRecommend() {
-		const response = await fetch(`/md/post/${postId}/recommend`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}/recommend`);
 		const responseData = await response.json();
 
 		if (response.ok) {
@@ -47,7 +47,7 @@
 	}
 
 	async function getPost() {
-		const response = await fetch(`/md/post/${postId}`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`);
 		postData = await response.json();
 
 		if (postData.createDate) {
@@ -71,7 +71,7 @@
 	async function removePost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/post/${postId}`, {
+			await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
 				method: 'DELETE',
 			});
 			window.location.href = `/post`;
@@ -87,7 +87,7 @@
 	async function recommendPost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`/md/post/${postId}/recommend`, {
+			await fetch(`https://medium-api.bbgk.me/post/${postId}/recommend`, {
 				method: 'POST',
 			});
 			await getPost();

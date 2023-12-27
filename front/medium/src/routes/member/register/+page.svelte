@@ -6,7 +6,7 @@
     const formData = new FormData(event.target);
 
     if (formData) {
-      const response = await fetch(`/md/member/join`, {
+      const response = await fetch(`https://medium-api.bbgk.me/member/join`, {
         method: 'POST',
         body: formData,
       });
