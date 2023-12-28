@@ -36,7 +36,9 @@
 	}
 
 	async function memberCheck() {
-		const response = await fetch(`https://medium-api.bbgk.me/member/check`);
+		const response = await fetch(`https://medium-api.bbgk.me/member/check`, {
+			credentials: 'include',
+		});
 		if (response.ok) {
 			const data = await response.json();
 			if (data.nickname) {
@@ -57,7 +59,9 @@
 	}
 
 	async function getAuthorPostList() {
-		const response = await fetch(`https://medium-api.bbgk.me/post/${author}/posts?page=${currentPage}`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/${author}/posts?page=${currentPage}`, {
+			credentials: 'include',
+		});
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			postListData = postListData.concat(jsonResponse.content);

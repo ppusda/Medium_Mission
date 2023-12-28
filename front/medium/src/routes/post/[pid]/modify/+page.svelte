@@ -7,7 +7,9 @@
 	let postData = $state({});
 
 	async function getPost() {
-		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`);
+		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
+			credentials: 'include',
+		});
 		postData = await response.json();
 	}
 
@@ -22,6 +24,7 @@
 		if (formData) {
 			const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
 				method: 'PUT',
+				credentials: 'include',
 				body: formData,
 			});
 

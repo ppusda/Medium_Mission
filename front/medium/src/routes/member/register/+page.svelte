@@ -8,6 +8,7 @@
     if (formData) {
       const response = await fetch(`https://medium-api.bbgk.me/member/join`, {
         method: 'POST',
+        credentials: 'include',
         body: formData,
       });
 
