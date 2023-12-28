@@ -24,7 +24,7 @@
 	}
 
 	async function memberCheck() {
-		const response = await fetch(`https://medium-api.bbgk.me/member/check`, {
+		const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
 			credentials: 'include',
 		});
 		if (response.ok) {
@@ -39,7 +39,7 @@
 	}
 
 	async function checkRecommend() {
-		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}/recommend`, {
+		const response = await fetch(`https://api.medium.bbgk.me/post/${postId}/recommend`, {
 			credentials: 'include',
 		});
 		const responseData = await response.json();
@@ -51,7 +51,7 @@
 	}
 
 	async function getPost() {
-		const response = await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
+		const response = await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
@@ -77,7 +77,7 @@
 	async function removePost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`https://medium-api.bbgk.me/post/${postId}`, {
+			await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			});
@@ -94,7 +94,7 @@
 	async function recommendPost() {
 		await memberCheck();
 		if (loginCheck) {
-			await fetch(`https://medium-api.bbgk.me/post/${postId}/recommend`, {
+			await fetch(`https://api.medium.bbgk.me/post/${postId}/recommend`, {
 				method: 'POST',
 				credentials: 'include',
 			});
