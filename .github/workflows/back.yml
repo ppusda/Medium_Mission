@@ -20,12 +20,6 @@ jobs:
           ACTIONS_STEP_DEBUG: true
           APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
         run: echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
-      - name: application-secret 위치 목록
-        run: ls -al
-      - name: application-secret 위치 확인
-        run: pwd
-      - name: application-secret 추가 목록
-        run: ls -al src/main/resources
       - name: Create Tag
         id: create_tag
         uses: mathieudutour/github-tag-action@v6.1
@@ -48,6 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: application-secret.yml 생성
+        env:
+          ACTIONS_STEP_DEBUG: true
+          APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
+        run: echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
       - name: Docker Buildx 설치
         uses: docker/setup-buildx-action@v2
       - name: 레지스트리 로그인
@@ -61,10 +60,6 @@ jobs:
           echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
-      - name: application-secret 재확인
-        run: ls -al src/main/resources
-      - name: application-secret 테스트 확인
-        run: ls -al cat src/main/resources/application-secret.yml
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
