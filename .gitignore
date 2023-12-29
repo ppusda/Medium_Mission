@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Local DB ###
+medium_app.mv.db
+medium_app.trace.db
+
+### Settings ###
+/src/main/resources/application-secret.yml
