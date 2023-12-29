@@ -1,7 +1,7 @@
 ## MEDIUM_MISSION PROJECT
 
-### Medium 사이트를 바탕으로 자유롭게 구현하는 미션 프로젝트 (https://medium.com)
-- [medium.bbgk.me](https://medium.bbgk.me/)
+### Medium 사이트를 바탕으로 자유롭게 구현하는 미션 프로젝트
+- [Medium 사이트 이용해보기](https://medium.bbgk.me/)
 
 ## ⚙ 개발 언어
 **Frontend**
