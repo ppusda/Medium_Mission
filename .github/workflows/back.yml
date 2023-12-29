@@ -20,6 +20,10 @@ jobs:
           ACTIONS_STEP_DEBUG: true
           APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_YML }}
         run: echo "$APPLICATION_SECRET" > src/main/resources/application-secret.yml
+      - name: application-secret.yml 확인
+        env:
+          ACTIONS_STEP_DEBUG: true
+        run: cat src/main/resources/application-secret.yml
       - name: Create Tag
         id: create_tag
         uses: mathieudutour/github-tag-action@v6.1
