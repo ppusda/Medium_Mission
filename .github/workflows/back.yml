@@ -24,6 +24,8 @@ jobs:
         run: ls -al
       - name: application-secret 위치 확인
         run: pwd
+      - name: application-secret 추가 목록
+        run: ls -al src/main/resources
       - name: Create Tag
         id: create_tag
         uses: mathieudutour/github-tag-action@v6.1
@@ -59,6 +61,10 @@ jobs:
           echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
+      - name: application-secret 재확인
+        run: ls -al src/main/resources
+      - name: application-secret 테스트 확인
+        run: ls -al cat src/main/resources/application-secret.yml
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
