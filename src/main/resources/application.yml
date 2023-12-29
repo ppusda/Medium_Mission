@@ -1,8 +1,8 @@
 spring:
   profiles:
     active: dev
-    include:
-      - secret
+  config:
+    import: optional:application-secret.yml
   data:
     redis:
       port: 6379
