@@ -1,6 +1,6 @@
 spring:
   config:
-    import: optional:application-secret.yml
+    import: classpath:application-secret.yml
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://172.17.0.1:3306/medium?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
