@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,20 +59,20 @@ public class PostController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    public ResponseEntity<?> writePost(@Valid PostRequest postRequest, BindingResult bindingResult, Principal principal) {
+    public ResponseEntity<?> writePost(@RequestBody @Valid PostRequest postRequest, BindingResult bindingResult, Principal principal) {
         if (validateUtil.hasErrors(bindingResult)) {
             return validateUtil.getErrors(bindingResult);
         }
 
         Member author = memberService.getMember(principal.getName());
-        postService.write(postRequest.title(), postRequest.content(), author);
+        postService.write(postRequest.title(), postRequest.content(), postRequest.isPaid(), author);
 
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("isAuthenticated()")
     @PutMapping("/{postId}")
-    public void modifyPost(@PathVariable("postId") Long postId, PostRequest postRequest, Principal principal) {
+    public void modifyPost(@PathVariable("postId") Long postId, @RequestBody @Valid PostRequest postRequest, Principal principal) {
         Member author = memberService.getMember(principal.getName());
         postService.modify(postId, postRequest.title(), postRequest.content(), author);
     }

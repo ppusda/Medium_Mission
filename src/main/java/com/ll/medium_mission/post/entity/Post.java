@@ -36,6 +36,9 @@ public class Post extends BaseEntity {
     @Column
     private Long viewCount;
 
+    @Column
+    private Boolean isPaid;
+
     @ManyToOne
     @JoinColumn
     private Member author;
@@ -45,11 +48,12 @@ public class Post extends BaseEntity {
     private List<PostRecommend> postRecommends;
 
     @Builder
-    public Post(String title, String content, Member author, Long viewCount) {
+    public Post(String title, String content, Member author, Long viewCount, Boolean isPaid) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.viewCount = viewCount == null ? 0L : viewCount;
+        this.isPaid = isPaid;
     }
 
     public void modifyPost(String title, String content) {

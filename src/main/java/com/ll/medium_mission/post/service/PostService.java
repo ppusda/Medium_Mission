@@ -19,10 +19,11 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public void write(String title, String content, Member author) {
+    public void write(String title, String content, Boolean isPaid, Member author) {
         Post post = Post.builder()
                 .title(title)
                 .content(content)
+                .isPaid(isPaid)
                 .author(author)
                 .build();
 

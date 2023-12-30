@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +36,7 @@ public class MemberController {
     private final ValidateUtil validateUtil;
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinMember(@Valid MemberJoinRequest memberJoinRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> joinMember(@RequestBody @Valid MemberJoinRequest memberJoinRequest, BindingResult bindingResult) {
         joinValidator.validate(memberJoinRequest, bindingResult);
 
         if (validateUtil.hasErrors(bindingResult)) {
@@ -47,7 +48,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginMember(@Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult) {
         if (validateUtil.hasErrors(bindingResult)) {
             return validateUtil.getErrors(bindingResult);
         }
@@ -87,6 +88,7 @@ public class MemberController {
 
             return MemberCheckResponse.builder()
                     .nickname(member.getNickname())
+                    .isPaid(member.getIsPaid())
                     .result(true)
                     .build();
         }

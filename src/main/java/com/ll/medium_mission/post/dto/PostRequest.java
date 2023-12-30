@@ -10,7 +10,8 @@ public record PostRequest(
         @NotEmpty(message = "제목은 필수 항목 입니다.")
         String title,
         @NotEmpty(message = "내용은 필수 항목 입니다.")
-        String content
+        String content,
+        Boolean isPaid
 ){
 
 }

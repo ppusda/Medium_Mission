@@ -52,7 +52,7 @@ class PostControllerTest {
     @DisplayName("1 페이지 글 조회가 정상적으로 이루어진다.")
     void getPosts() throws Exception {
         Member member = memberService.getMember("1");
-        postService.write("제목입니다.", "내용입니다.", member);
+        postService.write("제목입니다.", "내용입니다.", false, member);
 
         mockMvc.perform(get("/post?page=0"))
                 .andExpect(status().isOk())
@@ -63,7 +63,7 @@ class PostControllerTest {
     @DisplayName("특정 유저가 쓴 글에 대한 1 페이지 글 조회가 정상적으로 이루어진다.")
     void getMyPosts() throws Exception {
         Member member = memberService.getMember("1");
-        postService.write("제목입니다.", "내용입니다.", member);
+        postService.write("제목입니다.", "내용입니다.", false, member);
 
         mockMvc.perform(get("/post/" + member.getNickname() + "/posts?page=0"))
                 .andExpect(status().isOk())
