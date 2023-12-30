@@ -62,9 +62,4 @@ public class SecurityConfig {
         return new MvcRequestMatcher.Builder(introspector);
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 }

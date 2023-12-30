@@ -7,8 +7,6 @@ import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
 import com.ll.medium_mission.member.util.MemberRole;
 import com.ll.medium_mission.token.service.TokenService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,7 @@ public class MemberService {
         checkPassword(member, password);
 
         String memberId = String.valueOf(member.getId());
-        List<String> memberAuthorities = getAuthorities(memberId);
+        List<String> memberAuthorities = getRoles(memberId);
 
         String accessToken = jwtTokenProvider.createAccessToken(memberId, memberAuthorities);
         String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
@@ -97,7 +95,7 @@ public class MemberService {
     }
 
     @Transactional
-    public List<String> getAuthorities(String memberId) {
+    public List<String> getRoles(String memberId) {
         Member member = getMember(memberId);
 
         List<String> authorities = new ArrayList<>();
