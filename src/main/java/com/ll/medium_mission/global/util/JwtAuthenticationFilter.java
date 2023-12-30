@@ -2,6 +2,7 @@ package com.ll.medium_mission.global.util;
 
 import com.ll.medium_mission.global.provider.CookieProvider;
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
+import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.token.entity.Token;
 import com.ll.medium_mission.token.service.TokenService;
 import jakarta.servlet.FilterChain;
@@ -10,6 +11,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import javax.security.sasl.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
+    private final MemberService memberService;
     private final TokenService tokenService;
 
     private String getTokenFromRequest(HttpServletRequest request, String tokenName) {
@@ -62,7 +65,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 throw new AuthenticationException("재로그인이 필요합니다.");
             }
 
-            accessToken = jwtTokenProvider.createAccessToken(memberId);
+            List<String> memberAuthorities = memberService.getAuthorities(memberId);
+            accessToken = jwtTokenProvider.createAccessToken(memberId, memberAuthorities);
             refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
             tokenService.deleteToken(memberId);

@@ -5,8 +5,13 @@ import com.ll.medium_mission.member.dto.MemberLoginResponse;
 import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
+import com.ll.medium_mission.member.util.MemberRole;
 import com.ll.medium_mission.token.service.TokenService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +38,7 @@ public class MemberService {
                 .email(email)
                 .nickname(nickname)
                 .password(passwordEncoder.encode(password))
+                .isPaid(false)
                 .build();
 
         memberRepository.save(joinMember);
@@ -45,8 +51,11 @@ public class MemberService {
 
         checkPassword(member, password);
 
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(member.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken(String.valueOf(member.getId()));
+        String memberId = String.valueOf(member.getId());
+        List<String> memberAuthorities = getAuthorities(memberId);
+
+        String accessToken = jwtTokenProvider.createAccessToken(memberId, memberAuthorities);
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberId);
 
         tokenService.register(refreshToken, member.getId());
 
@@ -85,6 +94,20 @@ public class MemberService {
                 .email(member.getEmail())
                 .nickname(member.getNickname())
                 .build();
+    }
+
+    @Transactional
+    public List<String> getAuthorities(String memberId) {
+        Member member = getMember(memberId);
+
+        List<String> authorities = new ArrayList<>();
+        authorities.add(MemberRole.USER.getRole());
+
+        if (member.getIsPaid()) {
+            authorities.add(MemberRole.PAID.getRole());
+        }
+
+        return authorities;
     }
 
     private void checkPassword(Member member, String password) {

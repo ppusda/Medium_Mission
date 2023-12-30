@@ -34,14 +34,18 @@ public class Member extends BaseEntity {
     @Column
     private String password;
 
+    @Column
+    private Boolean isPaid;
+
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     private List<Post> posts;
 
     @Builder
-    public Member(String email, String nickname, String password) {
+    public Member(String email, String nickname, String password, Boolean isPaid) {
         this.email = email;
         this.nickname = (nickname == null || nickname.isBlank()) ? email.split("@")[0] : nickname;
         this.password = password;
+        this.isPaid = isPaid;
     }
 
 }
