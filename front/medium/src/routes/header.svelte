@@ -7,7 +7,7 @@
   let loginCheck = $state({});
 
   async function memberCheck() {
-    const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
+    const response = await fetch(`http://localhost:8080/member/check`, {
       credentials: 'include',
     });
 
@@ -41,7 +41,7 @@
     window.location.href = '/';
   }
   async function logout() {
-    await fetch(`https://api.medium.bbgk.me/member/logout`, {
+    await fetch(`http://localhost:8080/member/logout`, {
       method: 'DELETE',
       credentials: 'include',
     });

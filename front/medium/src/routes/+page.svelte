@@ -8,7 +8,7 @@
 	let postCount = $state({});
 
 	async function memberCheck() {
-		const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
+		const response = await fetch(`http://localhost:8080/member/check`, {
 			credentials: 'include',
 		});
 		if (response.ok) {
@@ -23,7 +23,7 @@
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/popular-posts`, {
+		const response = await fetch(`http://localhost:8080/post/popular-posts`, {
 			credentials: 'include',
 		});
 		const jsonResponse = await response.json();

@@ -6,10 +6,18 @@
 		const formData = new FormData(event.target);
 
 		if (formData) {
-			const response = await fetch(`https://api.medium.bbgk.me/post`, {
+			const jsonData = {};
+			for (let pair of formData.entries()) {
+				jsonData[pair[0]] = pair[1];
+			}
+
+			const response = await fetch(`http://localhost:8080/post`, {
 				method: 'POST',
 				credentials: 'include',
-				body: formData,
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(jsonData),
 			});
 
 			if (!response.ok) {
@@ -39,8 +47,16 @@
 
 <section class="pl-10 pr-10">
 	<div>
-		<h2 class="text-3xl font-bold border-bottom py-2 m-5">글 작성</h2>
 		<form on:submit={handleSubmit} method="post">
+			<div class="flex flex-row justify-between">
+				<h2 class="text-3xl font-bold py-2 m-5">글 작성</h2>
+				<div class="py-2 m-5">
+					<label class="cursor-pointer label">
+						<span class="label-text mr-3">유료 글로 작성</span>
+						<input type="checkbox" class="toggle toggle-primary" name="isPaid"/>
+					</label>
+				</div>
+			</div>
 			<div class="flex flex-col m-5">
 				<label for="title" class="form-label">제목</label>
 				<input class="input input-bordered input-primary mt-3 max-w-full" name="title" id="title" type="text" placeholder="제목을 입력해주세요."/>

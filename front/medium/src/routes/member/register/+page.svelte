@@ -6,10 +6,18 @@
     const formData = new FormData(event.target);
 
     if (formData) {
-      const response = await fetch(`https://api.medium.bbgk.me/member/join`, {
+      const jsonData = {};
+      for (let pair of formData.entries()) {
+        jsonData[pair[0]] = pair[1];
+      }
+
+      const response = await fetch(`http://localhost:8080/member/join`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData),
       });
 
       if (!response.ok) {

@@ -11,7 +11,7 @@
   let loginUsername = $state({});
 
   async function memberCheck() {
-    const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
+    const response = await fetch(`http://localhost:8080/member/check`, {
       credentials: 'include',
     });
     if (response.ok) {
@@ -34,7 +34,7 @@
   }
 
   async function getMember() {
-    const response = await fetch(`https://api.medium.bbgk.me/member/profile`, {
+    const response = await fetch(`http://localhost:8080/member/profile`, {
       credentials: 'include',
     });
     memberData = await response.json();
@@ -44,11 +44,19 @@
     event.preventDefault();
     const formData = new FormData(event.target);
 
+    const jsonData = {};
+    for (let pair of formData.entries()) {
+      jsonData[pair[0]] = pair[1];
+    }
+
     if (formData) {
-      const response = await fetch(`https://api.medium.bbgk.me/member/modify`, {
+      const response = await fetch(`http://localhost:8080/member/modify`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData),
       });
 
       if (!response.ok) {
