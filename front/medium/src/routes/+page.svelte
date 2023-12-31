@@ -2,7 +2,7 @@
 
 	import {onMount} from "svelte";
 
-	let loginCheck = $state({});
+	let isLogin = $state({});
 	let loginUsername = $state({});
 	let postListData = $state({});
 	let postCount = $state({});
@@ -18,7 +18,7 @@
 				loginUsername = data.nickname;
 			}
 
-			loginCheck = data.result;
+			isLogin = data.result;
 		}
 	}
 
@@ -59,7 +59,7 @@
 	}
 
 	onMount(async () => {
-		loginCheck = false;
+		isLogin = false;
 		await memberCheck();
 		await getHotPostList();
 
@@ -82,7 +82,7 @@
 					<div>
 						<h1 class="text-7xl font-bold">Medium Project</h1>
 						<p class="py-6">유료 글 포스팅을 할 수 있는 사이트 입니다.</p>
-						{#if loginCheck}
+						{#if isLogin}
 							<a class="btn btn-primary" href="/post">Start Read</a>
 						{:else}
 							<a class="btn btn-primary" href="/member/login">Get Started</a>
@@ -105,7 +105,12 @@
 							{#each postListData.slice(0, postCount) as post}
 								<div class="flex flex-col gap-3 h-full w-52 mr-32">
 									<div class="h-min w-full">
-										<a class="bold" href="/post/{post.id}">{post.title}</a>
+										<a class="bold" href="/post/{post.id}">
+											{#if post.isPaid}
+												🌟
+											{/if}
+											{post.title}
+										</a>
 									</div>
 									<div class="h-min w-full">
 										<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />

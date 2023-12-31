@@ -12,6 +12,7 @@ import com.ll.medium_mission.post.service.PostService;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
@@ -74,7 +76,8 @@ public class PostController {
     @PutMapping("/{postId}")
     public void modifyPost(@PathVariable("postId") Long postId, @RequestBody @Valid PostRequest postRequest, Principal principal) {
         Member author = memberService.getMember(principal.getName());
-        postService.modify(postId, postRequest.title(), postRequest.content(), author);
+        log.info(String.valueOf(postRequest.isPaid()));
+        postService.modify(postId, postRequest.title(), postRequest.content(), postRequest.isPaid(), author);
     }
 
     @PreAuthorize("isAuthenticated()")

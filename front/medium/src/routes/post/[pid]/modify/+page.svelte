@@ -5,12 +5,15 @@
 
 	let postId = $state({});
 	let postData = $state({});
+	let isPaid = $state({});
 
 	async function getPost() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
+		const response = await fetch(`http://localhost:8080/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
+		console.log(postData);
+		isPaid = postData.isPaid;
 	}
 
 	function goBack() {
@@ -21,11 +24,20 @@
 		event.preventDefault();
 		const formData = new FormData(event.target);
 
+		const jsonData = {};
+		for (let pair of formData.entries()) {
+			jsonData[pair[0]] = pair[1];
+		}
+		jsonData['isPaid'] = jsonData['isPaid'] === 'on' || isPaid;
+
 		if (formData) {
-			const response = await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
+			const response = await fetch(`http://localhost:8080/post/${postId}`, {
 				method: 'PUT',
 				credentials: 'include',
-				body: formData,
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(jsonData),
 			});
 
 			if (!response.ok) {
@@ -59,10 +71,18 @@
 
 <section class="pl-10 pr-10">
 	<div>
-		<h2 class="text-3xl font-bold border-bottom py-2 m-5">
-			<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
-			글 수정
-		</h2>
+		<div class="flex flex-row justify-between">
+			<h2 class="text-3xl font-bold py-2 m-5">
+				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
+				글 수정
+			</h2>
+			<div class="py-2 m-5">
+				<label class="cursor-pointer label">
+					<span class="label-text mr-3">유료 글로 전환</span>
+					<input type="checkbox" class="toggle toggle-primary" name="isPaid" bind:checked={isPaid} />
+				</label>
+			</div>
+		</div>
 		<form on:submit={handleSubmit} method="post">
 			<div class="flex flex-col m-5">
 				<label for="title" class="form-label">제목</label>

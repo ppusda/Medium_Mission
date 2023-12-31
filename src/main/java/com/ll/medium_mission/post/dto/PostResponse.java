@@ -11,6 +11,7 @@ public record PostResponse(
         String author,
         Long recommendCount,
         Long viewCount,
+        Boolean isPaid,
         LocalDateTime createDate,
         LocalDateTime modifiedDate){
 }

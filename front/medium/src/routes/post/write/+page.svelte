@@ -10,6 +10,7 @@
 			for (let pair of formData.entries()) {
 				jsonData[pair[0]] = pair[1];
 			}
+			jsonData['isPaid'] = jsonData['isPaid'] === 'on';
 
 			const response = await fetch(`http://localhost:8080/post`, {
 				method: 'POST',

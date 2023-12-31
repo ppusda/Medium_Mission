@@ -4,7 +4,7 @@
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
   let loginUsername = $state({});
-  let loginCheck = $state({});
+  let isLogin = $state({});
 
   async function memberCheck() {
     const response = await fetch(`http://localhost:8080/member/check`, {
@@ -19,7 +19,7 @@
         loginUsername = data.nickname;
       }
 
-      loginCheck = data.result;
+      isLogin = data.result;
     } else {
       toastWarning("로그인이 필요합니다.");
       await logout();
@@ -28,7 +28,7 @@
 
   async function moveToWritePostPage() {
     await memberCheck();
-    if (loginCheck) {
+    if (isLogin) {
       window.location.href = '/post/write';
       return;
     }
@@ -48,7 +48,7 @@
   }
 
   onMount(async () => {
-    loginCheck = false;
+    isLogin = false;
     await memberCheck();
   });
 
@@ -72,7 +72,7 @@
     <a class="btn btn-ghost text-xl" href="/">Medium</a>
   </div>
   <div class="navbar-end">
-    {#if loginCheck}
+    {#if isLogin}
       <div class="dropdown dropdown-end">
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUsername} 님, 환영합니다!</div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">

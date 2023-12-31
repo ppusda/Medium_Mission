@@ -56,9 +56,10 @@ public class Post extends BaseEntity {
         this.isPaid = isPaid;
     }
 
-    public void modifyPost(String title, String content) {
+    public void modifyPost(String title, String content, Boolean isPaid) {
         this.title = title;
         this.content = content;
+        this.isPaid = isPaid;
     }
 
     public void increaseViewCount() {

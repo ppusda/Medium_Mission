@@ -55,6 +55,7 @@ public class PostService {
                 .author(post.getAuthor().getNickname())
                 .recommendCount((long) post.getPostRecommends().size())
                 .viewCount(post.getViewCount())
+                .isPaid(post.getIsPaid())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();
@@ -72,14 +73,14 @@ public class PostService {
     }
 
     @Transactional
-    public void modify(Long postId, String title, String content, Member author) {
+    public void modify(Long postId, String title, String content, Boolean isPaid, Member author) {
         Post post = getPost(postId);
 
         if (!post.getAuthor().equals(author)) {
             throw new IllegalArgumentException("수정 권한이 없습니다.");
         }
 
-        post.modifyPost(title, content);
+        post.modifyPost(title, content, isPaid);
     }
 
     @Transactional
@@ -100,6 +101,7 @@ public class PostService {
                 .content(post.getContent())
                 .author(post.getAuthor().getNickname())
                 .recommendCount((long) post.getPostRecommends().size())
+                .isPaid(post.getIsPaid())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build());
