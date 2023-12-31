@@ -62,6 +62,10 @@ public class Post extends BaseEntity {
         this.isPaid = isPaid;
     }
 
+    public void cancelMembership() {
+        isPaid = false;
+    }
+
     public void increaseViewCount() {
         this.viewCount ++;
     }

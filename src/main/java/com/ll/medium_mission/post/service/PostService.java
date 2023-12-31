@@ -5,6 +5,7 @@ import com.ll.medium_mission.post.dto.PostResponse;
 import com.ll.medium_mission.post.entity.Post;
 import com.ll.medium_mission.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -70,6 +71,13 @@ public class PostService {
         }
 
         return post.get();
+    }
+
+    @Transactional
+    public void cancelMembershipPost(List<Post> posts) {
+        for (Post post: posts) {
+            post.cancelMembership();
+        }
     }
 
     @Transactional

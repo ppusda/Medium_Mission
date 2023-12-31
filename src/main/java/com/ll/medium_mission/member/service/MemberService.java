@@ -6,6 +6,7 @@ import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.repository.MemberRepository;
 import com.ll.medium_mission.member.util.MemberRole;
+import com.ll.medium_mission.post.service.PostService;
 import com.ll.medium_mission.token.service.TokenService;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
@@ -20,9 +21,12 @@ import org.springframework.stereotype.Service;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final TokenService tokenService;
+    private final PostService postService;
+
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final TokenService tokenService;
 
     @Transactional
     public void join(String email, String nickname, String password) {
@@ -123,6 +127,7 @@ public class MemberService {
     @Transactional
     public void cancelMembership (String memberId) {
         Member member = getMember(memberId);
+        postService.cancelMembershipPost(member.getPosts());
         member.setMembership(false);
     }
 
