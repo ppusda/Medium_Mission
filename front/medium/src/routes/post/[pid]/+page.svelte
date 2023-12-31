@@ -1,15 +1,17 @@
 <script>
 	import { page } from "$app/stores";
+	import { navigate } from "svelte-routing";
 	import {onMount} from "svelte";
 	import {toastWarning} from "../../../app.js";
 
 	let postId =  $state({});
 	let postData = $state({});
-	let answerCount = $state({});
+	let isPaidPost = $state({});
 
 	let recommendCheck = $state({});
 
-	let loginCheck = $state({});
+	let isLogin = $state({});
+	let isPaidUser = $state({});
 	let loginUsername = $state({});
 
 	function formatDate(datePhrase) {
@@ -34,7 +36,11 @@
 				loginUsername = data.nickname;
 			}
 
-			loginCheck = data.result;
+			if (data.isPaid) {
+				isPaidUser = data.isPaid;
+			}
+
+			isLogin = data.result;
 		}
 	}
 
@@ -56,6 +62,10 @@
 		});
 		postData = await response.json();
 
+		if (postData.isPaid) {
+			isPaidPost = postData.isPaid;
+		}
+
 		if (postData.createDate) {
 			postData.createDate = formatDate(postData.createDate);
 		}
@@ -67,7 +77,7 @@
 
 	async function moveToModifyPostPage() {
 		await memberCheck();
-		if (loginCheck) {
+		if (isLogin) {
 			window.location.href = `/post/${postId}/modify`;
 			return;
 		}
@@ -76,7 +86,7 @@
 
 	async function removePost() {
 		await memberCheck();
-		if (loginCheck) {
+		if (isLogin) {
 			await fetch(`http://localhost:8080/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
@@ -87,13 +97,9 @@
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	function goBack() {
-		window.history.back();
-	}
-
 	async function recommendPost() {
 		await memberCheck();
-		if (loginCheck) {
+		if (isLogin) {
 			await fetch(`http://localhost:8080/post/${postId}/recommend`, {
 				method: 'POST',
 				credentials: 'include',
@@ -105,13 +111,29 @@
 		toastWarning("로그인이 필요합니다.");
 	}
 
+	async function checkAuthority() {
+		if (isPaidPost) {
+			if (!isPaidUser) {
+				toastWarning("유료 회원만 글을 볼 수 있습니다.");
+				window.history.back();
+			}
+		}
+	}
+
 	onMount(async () => {
 		postId = $page.params['pid'];
 		recommendCheck = false;
+		isPaidPost = false;
+		isPaidUser = false;
 
 		await memberCheck();
 		await getPost();
-		await checkRecommend();
+
+		if (isLogin) {
+			await checkRecommend();
+		}
+
+		await checkAuthority();
 	});
 
 </script>
@@ -125,7 +147,7 @@
 	<div class="flex flex-col">
 		<div class="flex flex-col content-center flex-wrap">
 			<h2 class="text-3xl font-bold m-5">
-				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
+				<a class="btn btn-ghost" href="/post"> <i class="fa-solid fa-arrow-left"></i> </a>
 				{postData.title}
 			</h2>
 			<div class="flex flex-row justify-between">
