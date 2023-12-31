@@ -1,6 +1,7 @@
 <script>
   import {toastWarning} from "../../../app.js";
   import {onMount} from "svelte";
+  import {goto} from "$app/navigation";
 
   let isLogin = $state({});
   let isPaidUser = $state({});
@@ -45,6 +46,7 @@
       });
 
       await memberCheck();
+      await goto('/member/membership');
       return;
     }
     toastWarning("로그인이 필요합니다.")
@@ -112,7 +114,18 @@
     {#if !isPaidUser}
       <a class="btn btn-warning w-full" on:click={registerMembership}>2,000₩ 으로 시작하기!</a>
     {:else}
-      <a class="btn btn-error w-full" on:click={cancelMembership}> 멤버쉽 해지하기</a>
+      <label for="cancel_membership_modal" class="btn btn-error w-full">멤버쉽 해지하기</label>
+      <input type="checkbox" id="cancel_membership_modal" class="modal-toggle" />
+      <div class="modal" role="dialog">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">멤버쉽 해지</h3>
+          <span>정말로 해지하시겠습니까?</span>
+          <div class="modal-action">
+            <a class="btn btn-error" on:click={cancelMembership}>삭제</a>
+            <label for="cancel_membership_modal" class="btn btn-ghost">취소</label>
+          </div>
+        </div>
+      </div>
     {/if}
   </div>
 </section>

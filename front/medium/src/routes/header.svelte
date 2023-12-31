@@ -37,8 +37,9 @@
   async function logoutProcess() {
     await logout();
     toastNotice("로그아웃 되었습니다.");
-    await goto('/');
+    await memberCheck();
   }
+
   async function logout() {
     await fetch(`http://localhost:8080/member/logout`, {
       method: 'DELETE',
