@@ -5,15 +5,34 @@
 
 	let postId = $state({});
 	let postData = $state({});
-	let isPaid = $state({});
+	let isPaidPost = $state({});
+
+	let isLogin = $state({});
+	let isPaidUser = $state({});
+	let loginUsername = $state({});
+
+	async function memberCheck() {
+		const response = await fetch(`http://localhost:8080/member/check`, {
+			credentials: 'include',
+		});
+		if (response.ok) {
+			const data = await response.json();
+
+			if (data.nickname) {
+				loginUsername = data.nickname;
+			}
+
+			isPaidUser = !!data.isPaid;
+			isLogin = data.result;
+		}
+	}
 
 	async function getPost() {
 		const response = await fetch(`http://localhost:8080/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
-		console.log(postData);
-		isPaid = postData.isPaid;
+		isPaidPost = !!postData.isPaid;
 	}
 
 	function goBack() {
@@ -28,7 +47,7 @@
 		for (let pair of formData.entries()) {
 			jsonData[pair[0]] = pair[1];
 		}
-		jsonData['isPaid'] = jsonData['isPaid'] === 'on' || isPaid;
+		jsonData['isPaid'] = jsonData['isPaid'] === 'on' || isPaidPost;
 
 		if (formData) {
 			const response = await fetch(`http://localhost:8080/post/${postId}`, {
@@ -59,6 +78,8 @@
 
 	onMount(async () => {
 		postId = $page.params['pid'];
+		isPaidUser = false;
+		await memberCheck();
 		await getPost();
 	});
 
@@ -76,12 +97,14 @@
 				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
 				글 수정
 			</h2>
-			<div class="py-2 m-5">
-				<label class="cursor-pointer label">
-					<span class="label-text mr-3">유료 글로 전환</span>
-					<input type="checkbox" class="toggle toggle-primary" name="isPaid" bind:checked={isPaid} />
-				</label>
-			</div>
+			{#if isPaidUser}
+				<div class="py-2 m-5">
+					<label class="cursor-pointer label">
+						<span class="label-text mr-3">유료 글로 전환</span>
+						<input type="checkbox" class="toggle toggle-primary" name="isPaidPost" bind:checked={isPaidPost} />
+					</label>
+				</div>
+			{/if}
 		</div>
 		<form on:submit={handleSubmit} method="post">
 			<div class="flex flex-col m-5">
