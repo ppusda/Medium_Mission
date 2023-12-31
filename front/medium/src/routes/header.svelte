@@ -1,6 +1,7 @@
 <script>
   import {toastNotice, toastWarning} from "../app.js";
   import {onMount} from "svelte";
+  import {goto} from "$app/navigation";
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
   let loginUsername = $state({});
@@ -28,8 +29,7 @@
   async function moveToWritePostPage() {
     await memberCheck();
     if (isLogin) {
-      window.location.href = '/post/write';
-      return;
+      await goto('/post/write');
     }
     toastWarning("로그인이 필요합니다.");
   }
@@ -37,7 +37,7 @@
   async function logoutProcess() {
     await logout();
     toastNotice("로그아웃 되었습니다.");
-    window.location.href = '/';
+    await goto('/');
   }
   async function logout() {
     await fetch(`http://localhost:8080/member/logout`, {

@@ -1,5 +1,6 @@
 <script>
   import {toastWarning} from "../../../app.js";
+  import {goto} from "$app/navigation";
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -33,7 +34,7 @@
         }
       }
 
-      window.location.href = `/`;
+      await goto(`/`);
     }
   }
 

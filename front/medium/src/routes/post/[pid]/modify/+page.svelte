@@ -2,6 +2,7 @@
 	import {toastWarning} from "../../../../app.js";
 	import {onMount} from "svelte";
 	import {page} from "$app/stores";
+	import {goto} from "$app/navigation";
 
 	let postId = $state({});
 	let postData = $state({});
@@ -22,8 +23,18 @@
 				loginUsername = data.nickname;
 			}
 
-			isPaidUser = !!data.isPaid;
+			if (data.isPaid) {
+				isPaidUser = !!data.isPaid;
+			}
+
 			isLogin = data.result;
+		}
+	}
+
+	async function checkPermission() {
+		if (!isLogin && loginUsername !== postData.author) {
+			toastWarning("로그인이 필요합니다.");
+			await goto(`/post/${postId}`);
 		}
 	}
 
@@ -72,15 +83,19 @@
 				}
 			}
 
-			window.location.href=`/post/${postId}`
+			await goto(`/post/${postId}`);
 		}
 	}
 
 	onMount(async () => {
 		postId = $page.params['pid'];
+		isLogin = false;
 		isPaidUser = false;
+
 		await memberCheck();
 		await getPost();
+
+		await checkPermission();
 	});
 
 </script>

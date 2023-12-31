@@ -2,6 +2,7 @@
 	import {toastWarning, toastNotice} from "../../../app.js";
 	import {onDestroy, onMount} from "svelte";
 	import {page} from "$app/stores";
+	import {goto} from "$app/navigation";
 
 	const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 	let currentPage = $state({});
@@ -9,8 +10,23 @@
 	let postListData = $state([]);
 	let author = $state({});
 
-	let loginCheck = $state({});
+	let isLogin = $state({});
 	let loginUsername = $state({});
+
+	async function memberCheck() {
+		const response = await fetch(`http://localhost:8080/member/check`, {
+			credentials: 'include',
+		});
+		if (response.ok) {
+			const data = await response.json();
+
+			if (data.nickname) {
+				loginUsername = data.nickname;
+			}
+
+			isLogin = data.result;
+		}
+	}
 
 	const NextPage = () => {
 		if (currentPage >= totalPages-1) {
@@ -35,25 +51,10 @@
 		return contentPhrase;
 	}
 
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			loginCheck = data.result;
-		}
-	}
-
 	async function moveToModifyMemberPage() {
 		await memberCheck();
-		if (loginCheck) {
-			window.location.href = `/member/${author}/modify`;
-			return;
+		if (isLogin) {
+			await goto(`/member/${author}/modify`);
 		}
 		toastWarning("로그인이 필요합니다.");
 	}

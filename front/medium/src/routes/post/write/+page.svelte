@@ -1,10 +1,10 @@
 <script>
 	import {toastWarning} from "../../../app.js";
 	import {onMount} from "svelte";
+	import {goto} from "$app/navigation";
 
 	let isLogin = $state({});
 	let isPaidUser = $state({});
-	let loginUsername = $state({});
 
 	async function memberCheck() {
 		const response = await fetch(`http://localhost:8080/member/check`, {
@@ -13,12 +13,15 @@
 		if (response.ok) {
 			const data = await response.json();
 
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
 			isPaidUser = !!data.isPaid;
 			isLogin = data.result;
+		}
+	}
+
+	async function checkPermission() {
+		if (!isLogin) {
+			toastWarning("로그인이 필요합니다.");
+			await goto(`/post`);
 		}
 	}
 
@@ -55,13 +58,16 @@
 				}
 			}
 
-			window.location.href = `/post`;
+			await goto(`/post`);
 		}
 	}
 
 	onMount(async () => {
+		isLogin = false;
 		isPaidUser = false;
 		await memberCheck();
+
+		await checkPermission();
 	});
 
 </script>

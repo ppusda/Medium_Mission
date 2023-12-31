@@ -7,7 +7,8 @@
   let author = $state({});
   let memberData = $state({});
 
-  let loginCheck = $state({});
+  let isLogin = $state({});
+  let isPaidUser = $state({});
   let loginUsername = $state({});
 
   async function memberCheck() {
@@ -16,21 +17,25 @@
     });
     if (response.ok) {
       const data = await response.json();
+
       if (data.nickname) {
         loginUsername = data.nickname;
       }
 
-      loginCheck = data.result;
+      if (data.isPaid) {
+        isPaidUser = !!data.isPaid;
+      }
+
+      isLogin = data.result;
     }
   }
 
-   function permissionCheck() {
-    if (loginCheck) {
+  async function checkPermission() {
+    console.log(isLogin);
+    if (!isLogin || loginUsername !== author) {
       toastWarning("로그인이 필요합니다.");
-      window.history.back();
-      return;
+      await goto(`/member/${author}`);
     }
-
   }
 
   async function getMember() {
@@ -83,7 +88,11 @@
 
   onMount(async () => {
     author = $page.params['author'];
+    isLogin = false;
+
     await memberCheck();
+    await checkPermission();
+
     await getMember();
   });
 

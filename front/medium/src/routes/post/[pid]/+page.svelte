@@ -2,6 +2,7 @@
 	import { page } from "$app/stores";
 	import {onMount} from "svelte";
 	import {toastWarning} from "../../../app.js";
+	import {goto} from "$app/navigation";
 
 	let postId =  $state({});
 	let postData = $state({});
@@ -36,7 +37,7 @@
 			}
 
 			if (data.isPaid) {
-				isPaidUser = data.isPaid;
+				isPaidUser = !!data.isPaid;
 			}
 
 			isLogin = data.result;
@@ -77,7 +78,7 @@
 	async function moveToModifyPostPage() {
 		await memberCheck();
 		if (isLogin) {
-			window.location.href = `/post/${postId}/modify`;
+			await goto(`/post/${postId}/modify`);
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
@@ -90,8 +91,7 @@
 				method: 'DELETE',
 				credentials: 'include',
 			});
-			window.location.href = `/post`;
-			return;
+			await goto(`/post`);
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
@@ -110,7 +110,7 @@
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function checkAuthority() {
+	async function checkMembership() {
 		if (isPaidPost) {
 			if (!isPaidUser) {
 				toastWarning("유료 회원만 글을 볼 수 있습니다.");
@@ -132,7 +132,7 @@
 			await checkRecommend();
 		}
 
-		await checkAuthority();
+		await checkMembership();
 	});
 
 </script>
