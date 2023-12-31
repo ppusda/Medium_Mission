@@ -114,6 +114,18 @@ public class MemberService {
         }
     }
 
+    @Transactional
+    public void registerMembership(String memberId) {
+        Member member = getMember(memberId);
+        member.setMembership(true);
+    }
+
+    @Transactional
+    public void cancelMembership (String memberId) {
+        Member member = getMember(memberId);
+        member.setMembership(false);
+    }
+
     public void deleteAll() { // 테스트 전용 메서드
         memberRepository.deleteAll();
     }

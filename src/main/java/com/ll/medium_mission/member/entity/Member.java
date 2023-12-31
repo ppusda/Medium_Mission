@@ -48,4 +48,7 @@ public class Member extends BaseEntity {
         this.isPaid = isPaid;
     }
 
+    public void setMembership(Boolean paid) {
+        isPaid = paid;
+    }
 }

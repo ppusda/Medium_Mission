@@ -1,6 +1,5 @@
 <script>
 	import { page } from "$app/stores";
-	import { navigate } from "svelte-routing";
 	import {onMount} from "svelte";
 	import {toastWarning} from "../../../app.js";
 

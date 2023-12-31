@@ -81,6 +81,18 @@ public class MemberController {
                 .build();
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/membership")
+    public void registerMembership(Principal principal) {
+        memberService.registerMembership(principal.getName());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/membership")
+    public void cancelMembership(Principal principal) {
+        memberService.cancelMembership(principal.getName());
+    }
+
     @GetMapping("/check")
     public MemberCheckResponse checkMember(Principal principal) {
         if (principal != null) {

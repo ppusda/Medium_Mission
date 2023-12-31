@@ -13,7 +13,6 @@
 
     if (response.ok) {
       const data = await response.json();
-      console.log(data);
 
       if (data.nickname) {
         loginUsername = data.nickname;
@@ -78,6 +77,7 @@
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
           <li><a on:click={moveToWritePostPage}>글 작성</a></li>
           <li><a href="/member/{loginUsername}">내가 쓴 글 보기</a></li>
+          <li><a href="/member/membership">미디엄과 함께하기!</a></li>
           <li><a on:click={logoutProcess}>로그아웃</a></li>
         </ul>
       </div>
