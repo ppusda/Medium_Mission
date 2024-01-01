@@ -37,13 +37,20 @@ public class PostService {
     public Page<PostResponse> getPosts(int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
-        return convertToPageResponse(postRepository.findAllByOrderByModifiedDateDesc(pageable));
+        return convertToPageResponse(postRepository.findAllByOrderByCreateDateDesc(pageable));
+    }
+
+    @Transactional
+    public Page<PostResponse> getHotPosts() {
+        Pageable pageable = PageRequest.of(0, 5);
+
+        return convertToPageResponse(postRepository.getHotPosts(pageable));
     }
 
     @Transactional
     public Page<PostResponse> getAuthorsPosts(Member author, int page) {
         Pageable pageable = PageRequest.of(page, 5);
-        return convertToPageResponse(postRepository.findAllByAuthorOrderByModifiedDateDesc(author, pageable));
+        return convertToPageResponse(postRepository.findAllByAuthorOrderByCreateDateDesc(author, pageable));
     }
 
     @Transactional

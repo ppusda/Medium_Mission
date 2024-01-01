@@ -45,7 +45,7 @@ public class PostController {
 
     @GetMapping("/popular-posts")
     public Page<PostResponse> getPopularPosts() {
-        return postService.getPosts(0);
+        return postService.getHotPosts();
     }
 
     @GetMapping("/{author}/posts")
