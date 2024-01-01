@@ -6,10 +6,12 @@ import com.ll.medium_mission.member.dto.MemberCheckResponse;
 import com.ll.medium_mission.member.dto.MemberJoinRequest;
 import com.ll.medium_mission.member.dto.MemberLoginRequest;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
+import com.ll.medium_mission.member.dto.MemberModifyRequest;
 import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.member.validator.JoinValidator;
+import com.ll.medium_mission.member.validator.ModifyValidator;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +34,10 @@ public class MemberController {
 
     private final MemberService memberService;
     private final CookieProvider cookieProvider;
-    private final JoinValidator joinValidator;
+
     private final ValidateUtil validateUtil;
+    private final JoinValidator joinValidator;
+    private final ModifyValidator modifyValidator;
 
     @PostMapping("/join")
     public ResponseEntity<?> joinMember(@RequestBody @Valid MemberJoinRequest memberJoinRequest, BindingResult bindingResult) {
@@ -79,6 +83,19 @@ public class MemberController {
                         cookieProvider.removeToken("refreshToken"))
                 )
                 .build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify")
+    public ResponseEntity<?> modifyMember(@RequestBody @Valid MemberModifyRequest memberModifyRequest, BindingResult bindingResult, Principal principal) {
+        modifyValidator.validate(memberModifyRequest, bindingResult);
+
+        if (validateUtil.hasErrors(bindingResult)) {
+            return validateUtil.getErrors(bindingResult);
+        }
+
+        memberService.modify(principal.getName(), memberModifyRequest.nickname(), memberModifyRequest.password(), memberModifyRequest.newPassword());
+        return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("isAuthenticated()")

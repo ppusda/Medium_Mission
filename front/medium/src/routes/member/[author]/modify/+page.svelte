@@ -71,12 +71,9 @@
           toastWarning(errorData.nickname);
           return;
         }
+
         if (errorData.password) {
           toastWarning(errorData.password);
-          return;
-        }
-        if (errorData.passwordConfirm) {
-          toastWarning(errorData.passwordConfirm);
           return;
         }
         
@@ -84,7 +81,7 @@
         return;
       }
 
-      await goto(`/member/${author}`);
+      window.location.href = `/member/${jsonData['nickname']}`;
     }
   }
 
@@ -110,10 +107,14 @@
   <div>
     <h2 class="text-3xl font-bold border-bottom py-2 m-5">프로필 수정</h2>
     <form on:submit={handleSubmit} method="post">
-      <div class="flex flex-col m-5">
-        <label for="email" class="form-label">이메일</label>
-        <p>{memberData.email}</p>
-        <a class="mt-3 max-w-full"></a>
+      <div class="flex flex-row justify-between m-5">
+        <div class="flex flex-col">
+          <label for="email" class="form-label">이메일</label>
+          <p>{memberData.email}</p>
+        </div>
+        <div>
+          <input class="input input-bordered input-primary mt-3" name="password" id="password" type="password" placeholder="현재 비밀번호를 입력해주세요"/>
+        </div>
       </div>
       <div class="flex flex-col m-5">
         <label for="nickname" class="form-label">닉네임</label>
@@ -121,11 +122,11 @@
       </div>
       <div class="flex flex-col m-5">
         <label for="password" class="form-label">비밀번호</label>
-        <input class="input input-bordered input-primary mt-3 max-w-full" name="password" id="password" type="password" placeholder="비밀번호를 입력해주세요."/>
+        <input class="input input-bordered input-primary mt-3 max-w-full" name="newPassword" id="newPassword" type="password" placeholder="비밀번호를 변경하고 싶은 경우에만 입력해주세요."/>
       </div>
       <div class="flex flex-col m-5">
         <label for="passwordConfirm" class="form-label">비밀번호 확인</label>
-        <input class="input input-bordered input-primary mt-3 max-w-full" name="passwordConfirm" id="passwordConfirm" type="password" placeholder="비밀번호를 입력해주세요."/>
+        <input class="input input-bordered input-primary mt-3 max-w-full" name="newPasswordConfirm" id="newPasswordConfirm" type="password" placeholder="비밀번호를 변경하고 싶은 경우에만 입력해주세요."/>
       </div>
       <div class="flex flex-col m-5">
         <button type="submit" class="btn btn-primary mt-3">수정</button>

@@ -68,6 +68,21 @@ public class MemberService {
     }
 
     @Transactional
+    public void modify(String memberId, String nickname, String password, String newPassword) {
+        Member member = getMember(memberId);
+
+        checkPassword(member, password);
+
+        if (!nickname.isBlank() && !member.getNickname().equals(nickname)) {
+            member.modifyNickname(nickname);
+        }
+
+        if (!newPassword.isBlank()) {
+            member.modifyPassword(passwordEncoder.encode(newPassword));
+        }
+    }
+
+    @Transactional
     public Member getMember(String id) {
         return memberRepository.findById(Long.parseLong(id))
                 .orElseThrow(NotExistMemberException::new);

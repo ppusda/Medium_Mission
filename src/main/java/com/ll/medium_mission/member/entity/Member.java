@@ -51,4 +51,12 @@ public class Member extends BaseEntity {
     public void setMembership(Boolean paid) {
         isPaid = paid;
     }
+
+    public void modifyNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void modifyPassword(String password) {
+        this.password = password;
+    }
 }

@@ -78,7 +78,7 @@
         <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUsername} 님, 환영합니다!</div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
           <li><a on:click={moveToWritePostPage}>글 작성</a></li>
-          <li><a href="/member/{loginUsername}">내가 쓴 글 보기</a></li>
+          <li><a href="/member/{loginUsername}">마이페이지</a></li>
           <li><a href="/member/membership">미디엄과 함께하기!</a></li>
           <li><a on:click={logoutProcess}>로그아웃</a></li>
         </ul>
