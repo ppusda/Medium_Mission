@@ -54,6 +54,12 @@ public class PostService {
     }
 
     @Transactional
+    public Page<PostResponse> getSearchPosts(int page, String keyword) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return convertToPageResponse(postRepository.searchPosts(keyword, pageable));
+    }
+
+    @Transactional
     public PostResponse getPostResponse(Long postId) {
         Post post = getPost(postId);
         post.increaseViewCount();

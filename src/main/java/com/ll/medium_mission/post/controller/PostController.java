@@ -54,6 +54,11 @@ public class PostController {
         return postService.getAuthorsPosts(member, page);
     }
 
+    @GetMapping("/search")
+    public Page<PostResponse> searchPost(@RequestParam("page") int page, @RequestParam("keyword") String keyword) {
+        return postService.getSearchPosts(page, keyword);
+    }
+
     @GetMapping("/{postId}")
     public PostResponse getPostDetail(@PathVariable("postId") Long postId) {
         return postService.getPostResponse(postId);

@@ -55,6 +55,7 @@
 		await memberCheck();
 		if (isLogin) {
 			await goto(`/member/${author}/modify`);
+			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}

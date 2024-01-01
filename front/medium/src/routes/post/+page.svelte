@@ -12,6 +12,7 @@
 	let isLogin = $state({});
 	let isPaid = $state({});
 	let loginUsername = $state({});
+	let searchKeyword = "";
 
 	const NextPage = () => {
 		if (currentPage >= totalPages-1) {
@@ -61,8 +62,12 @@
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function getPostList() {
-		const response = await fetch(`http://localhost:8080/post?page=${currentPage}`, {
+	async function getPostList(keyword = '') {
+		const url = keyword ?
+				`http://localhost:8080/post/search?page=${currentPage}&keyword=${keyword}` :
+				`http://localhost:8080/post?page=${currentPage}`;
+
+		const response = await fetch(url, {
 			credentials: 'include',
 		});
 		const jsonResponse = await response.json();
@@ -80,6 +85,23 @@
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			hotPostListData = jsonResponse.content;
+		}
+	}
+
+	async function handleSubmit(event) {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		const keyword = formData.get('keyword');
+
+		if (keyword === '') {
+			await getPostList();
+		}
+
+		if (formData) {
+			currentPage = 0;
+			postListData = [];
+			searchKeyword = keyword;
+			await getPostList(searchKeyword);
 		}
 	}
 
@@ -138,6 +160,14 @@
 		</div>
 
 		<div class="flex flex-col w-full">
+			<div class="flex flex-row p-3 form-control justify-end">
+				<form on:submit={handleSubmit} method="get">
+					<input type="text" id="keyword" name="keyword" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+					<button class="btn btn-ghost btn-circle me-3" type="submit">
+						<i class="fa-solid fa-magnifying-glass"></i>
+					</button>
+				</form>
+			</div>
 			{#each postListData as data}
 				<div class="m-3 w-full">
 					<div class="hero bg-base-200">

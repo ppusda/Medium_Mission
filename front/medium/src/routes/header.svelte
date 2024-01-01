@@ -30,6 +30,7 @@
     await memberCheck();
     if (isLogin) {
       await goto('/post/write');
+      return;
     }
     toastWarning("로그인이 필요합니다.");
   }
