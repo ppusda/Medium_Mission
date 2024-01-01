@@ -1,5 +1,8 @@
 package com.ll.medium_mission.member.service;
 
+import com.ll.medium_mission.global.exception.AlreadyExistMemberException;
+import com.ll.medium_mission.global.exception.NotExistMemberException;
+import com.ll.medium_mission.global.exception.NotIncorrectAccountException;
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
 import com.ll.medium_mission.member.dto.MemberResponse;
@@ -33,7 +36,7 @@ public class MemberService {
         Optional<Member> member = memberRepository.findByEmail(email);
 
         if (member.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 회원입니다.");
+            throw new AlreadyExistMemberException();
         }
 
         Member joinMember = Member.builder()
@@ -49,7 +52,7 @@ public class MemberService {
     @Transactional
     public MemberLoginResponse login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(NotExistMemberException::new);
 
         checkPassword(member, password);
 
@@ -71,7 +74,7 @@ public class MemberService {
     public Member getMember(String id) {
         Optional<Member> member = memberRepository.findById(Long.parseLong(id));
         if (member.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+            throw new NotExistMemberException();
         }
         return member.get();
     }
@@ -80,7 +83,7 @@ public class MemberService {
     public Member getMemberByNickname(String nickname) {
         Optional<Member> member = memberRepository.findByNickname(nickname);
         if (member.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 회원입니다.");
+            throw new NotExistMemberException();
         }
         return member.get();
     }
@@ -114,7 +117,7 @@ public class MemberService {
 
     private void checkPassword(Member member, String password) {
         if (passwordEncoder.matches(member.getPassword(), password)) {
-            throw new IllegalArgumentException("비밀번호가 틀립니다.");
+            throw new NotIncorrectAccountException();
         }
     }
 

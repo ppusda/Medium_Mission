@@ -1,5 +1,7 @@
 package com.ll.medium_mission.post.service;
 
+import com.ll.medium_mission.global.exception.NoHasAuthorityException;
+import com.ll.medium_mission.global.exception.NotExistPostException;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.post.dto.PostResponse;
 import com.ll.medium_mission.post.entity.Post;
@@ -67,7 +69,7 @@ public class PostService {
         Optional<Post> post = postRepository.findById(postId);
 
         if (post.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 글입니다.");
+            throw new NotExistPostException();
         }
 
         return post.get();
@@ -85,7 +87,7 @@ public class PostService {
         Post post = getPost(postId);
 
         if (!post.getAuthor().equals(author)) {
-            throw new IllegalArgumentException("수정 권한이 없습니다.");
+            throw new NoHasAuthorityException();
         }
 
         post.modifyPost(title, content, isPaid);
@@ -96,7 +98,7 @@ public class PostService {
         Post post = getPost(postId);
 
         if (!post.getAuthor().equals(author)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new NoHasAuthorityException();
         }
 
         postRepository.deleteById(postId);
