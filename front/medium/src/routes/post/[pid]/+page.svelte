@@ -87,10 +87,18 @@
 	async function removePost() {
 		await memberCheck();
 		if (isLogin) {
-			await fetch(`http://localhost:8080/post/${postId}`, {
+			const response = await fetch(`http://localhost:8080/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+
+				toastWarning(errorData.message);
+				return;
+			}
+
 			await goto(`/post`);
 		}
 		toastWarning("로그인이 필요합니다.");

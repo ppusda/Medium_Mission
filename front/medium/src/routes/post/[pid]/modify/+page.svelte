@@ -81,6 +81,9 @@
 					toastWarning(errorData.content);
 					return;
 				}
+
+				toastWarning(errorData.message);
+				return;
 			}
 
 			await goto(`/post/${postId}`);

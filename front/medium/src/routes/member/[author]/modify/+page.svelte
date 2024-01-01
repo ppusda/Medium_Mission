@@ -65,20 +65,23 @@
       });
 
       if (!response.ok) {
-        const validateData = await response.json();
+        const errorData = await response.json();
 
-        if (validateData.nickname) {
-          toastWarning(validateData.nickname);
+        if (errorData.nickname) {
+          toastWarning(errorData.nickname);
           return;
         }
-        if (validateData.password) {
-          toastWarning(validateData.password);
+        if (errorData.password) {
+          toastWarning(errorData.password);
           return;
         }
-        if (validateData.passwordConfirm) {
-          toastWarning(validateData.passwordConfirm);
+        if (errorData.passwordConfirm) {
+          toastWarning(errorData.passwordConfirm);
           return;
         }
+        
+        toastWarning(errorData.message);
+        return;
       }
 
       await goto(`/member/${author}`);

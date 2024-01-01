@@ -31,6 +31,9 @@
           toastWarning(errorData.password);
           return;
         }
+
+        toastWarning(errorData.message);
+        return;
       }
 
       window.location.href = "/";
