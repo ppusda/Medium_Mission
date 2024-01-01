@@ -9,6 +9,7 @@
 	let isPaidPost = $state({});
 
 	let recommendCheck = $state({});
+	let recommendCount = $state({});
 
 	let isLogin = $state({});
 	let isPaidUser = $state({});
@@ -52,7 +53,7 @@
 
 		if (response.ok) {
 			recommendCheck = responseData.isRecommended;
-			return;
+			recommendCount = responseData.recommendCount;
 		}
 	}
 
@@ -73,6 +74,8 @@
 		if (postData.modifiedDate) {
 			postData.modifiedDate = formatDate(postData.modifiedDate);
 		}
+
+		recommendCount = postData.recommendCount;
 	}
 
 	async function moveToModifyPostPage() {
@@ -184,7 +187,7 @@
 						{:else}
 							<a class="btn btn-ghost" on:click={recommendPost}><i class="fa-regular fa-thumbs-up fa-xl"></i></a>
 						{/if}
-						<p>{postData.recommendCount}</p>
+						<p>{recommendCount}</p>
 					</div>
 					{#if postData.author}
 						{#if loginUsername === postData.author}

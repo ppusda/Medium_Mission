@@ -38,7 +38,7 @@
   async function logoutProcess() {
     await logout();
     toastNotice("로그아웃 되었습니다.");
-    await memberCheck();
+    window.location.href = '/';
   }
 
   async function logout() {

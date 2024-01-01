@@ -102,8 +102,10 @@ public class PostController {
 
     @GetMapping("/{postId}/recommend")
     public RecommendCheckResponse recommendCheck(@PathVariable("postId") Long postId, Principal principal) {
+        Post post = postService.getPost(postId);
         Member member = memberService.getMember(principal.getName());
         return RecommendCheckResponse.builder()
+                .recommendCount((long) post.getPostRecommends().size())
                 .isRecommended(postRecommendService.recommendCheck(postId, member.getId()))
                 .build();
     }
