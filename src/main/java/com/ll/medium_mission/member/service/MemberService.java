@@ -33,11 +33,8 @@ public class MemberService {
 
     @Transactional
     public void join(String email, String nickname, String password) {
-        Optional<Member> member = memberRepository.findByEmail(email);
-
-        if (member.isPresent()) {
-            throw new AlreadyExistMemberException();
-        }
+        checkDuplicateEmail(email);
+        nickname = getNickname(email, nickname);
 
         Member joinMember = Member.builder()
                 .email(email)
@@ -72,11 +69,8 @@ public class MemberService {
 
     @Transactional
     public Member getMember(String id) {
-        Optional<Member> member = memberRepository.findById(Long.parseLong(id));
-        if (member.isEmpty()) {
-            throw new NotExistMemberException();
-        }
-        return member.get();
+        return memberRepository.findById(Long.parseLong(id))
+                .orElseThrow(NotExistMemberException::new);
     }
 
     @Transactional
@@ -115,9 +109,30 @@ public class MemberService {
         return authorities;
     }
 
+    private void checkDuplicateEmail(String email) {
+        Optional<Member> member = memberRepository.findByEmail(email);
+        if (member.isPresent()) {
+            throw new AlreadyExistMemberException();
+        }
+    }
+
     private void checkPassword(Member member, String password) {
-        if (passwordEncoder.matches(member.getPassword(), password)) {
+        if (!passwordEncoder.matches(password, member.getPassword())) {
             throw new NotIncorrectAccountException();
+        }
+    }
+
+    private String getNickname(String email, String nickname) {
+        if (nickname == null || nickname.isBlank()) {
+            nickname = email.split("@")[0];
+        }
+        checkDuplicateNickname(nickname);
+        return nickname;
+    }
+
+    private void checkDuplicateNickname(String nickname) {
+        if (memberRepository.findByNickname(nickname).isPresent()) {
+            throw new AlreadyExistMemberException();
         }
     }
 

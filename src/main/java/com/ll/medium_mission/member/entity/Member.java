@@ -43,7 +43,7 @@ public class Member extends BaseEntity {
     @Builder
     public Member(String email, String nickname, String password, Boolean isPaid) {
         this.email = email;
-        this.nickname = (nickname == null || nickname.isBlank()) ? email.split("@")[0] : nickname;
+        this.nickname = nickname;
         this.password = password;
         this.isPaid = isPaid;
     }
