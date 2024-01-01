@@ -111,7 +111,7 @@
 				method: 'POST',
 				credentials: 'include',
 			});
-			await getPost();
+
 			await checkRecommend();
 			return;
 		}
