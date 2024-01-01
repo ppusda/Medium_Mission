@@ -17,11 +17,11 @@ public class InitData {
 
     private final MemberService memberService;
 
-    static final String email = "ppusda1234@gmail.com";
-    static final String password = "ppusda1234";
-    static final String FAQTitle = "미디엄에서 글을 작성해보고 싶으신가요? 여기서 시작해보세요!";
+    static final String EMAIL = "ppusda1234@gmail.com";
+    static final String PASSWORD = "ppusda1234";
+    static final String FAQ_TITLE = "미디엄에서 글을 작성해보고 싶으신가요? 여기서 시작해보세요!";
 
-    static final String FAQContent = """
+    static final String FAQ_CONTENT = """
                 좋은 글을 쓰기 위한 FAQ 방식의 가이드:
                 
                 Q: 좋은 글을 쓰기 위한 첫 번째 단계는 무엇인가요?
@@ -44,9 +44,9 @@ public class InitData {
                 좋은 글쓰기를 위해 계속해서 노력해보세요!
             """;
 
-    static final String TipTitle = "읽기 좋은 글을 작성하는 방법!";
+    static final String TIP_TITLE = "읽기 좋은 글을 작성하는 방법!";
 
-    static final String TipContent = """
+    static final String TIP_CONTENT = """
             사람들이 읽고 싶어하는 글을 작성하기 위한 몇 가지 팁:
                         
             1. 흥미로운 주제 선택: 사람들이 흥미를 가지고 이야기를 읽기 위해서는 흥미로운 주제를 선택해야 합니다. 개인적인 경험, 독특한 관점, 사회적인 문제 등 독자들에게 호소할 수 있는 주제를 고려해 보세요.
@@ -64,26 +64,45 @@ public class InitData {
             좋은 결과를 기대해 봅니다!
             """;
 
+    static final String PAID_USER_EMAIL = "paid@gmail.com";
+    static final String PAID_USER_PASSWORD = "paid1234";
+
+    static final String PAID_TITLE = "유료 글";
+    static final String PAID_CONTENT = "유료 내용";
+
     @Bean
     public CommandLineRunner demo(PostRepository postRepository) {
-        memberService.join(email, null, password);
+        memberService.join(EMAIL, null, PASSWORD);
         Member member = memberService.getMember("1");
+
+        memberService.join(PAID_USER_EMAIL, null, PAID_USER_PASSWORD);
+        memberService.registerMembership("2");
+        Member paidMember = memberService.getMember("2");
 
         return (args) -> {
             postRepository.save(Post.builder()
-                    .title(FAQTitle)
-                    .content(FAQContent)
+                    .title(FAQ_TITLE)
+                    .content(FAQ_CONTENT)
                     .author(member)
                     .build()
             );
 
             postRepository.save(Post.builder()
-                    .title(TipTitle)
-                    .content(TipContent)
+                    .title(TIP_TITLE)
+                    .content(TIP_CONTENT)
                     .author(member)
                     .build()
             );
+
+            for (int i = 1; i <= 100; i++) {
+                postRepository.save(Post.builder()
+                        .title(PAID_TITLE + i)
+                        .content(PAID_CONTENT + i)
+                        .isPaid(true)
+                        .author(paidMember)
+                        .build()
+                );
+            }
         };
     }
-
 }
