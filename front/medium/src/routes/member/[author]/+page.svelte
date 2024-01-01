@@ -35,7 +35,7 @@
 			return;
 		}
 		currentPage ++;
-		getPostList();
+		getAuthorPostList();
 	}
 
 	function handleScroll() {
@@ -76,7 +76,6 @@
 			});
 		}
 	}
-
 
 	onMount(async () => {
 		currentPage = 0;
