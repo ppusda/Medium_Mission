@@ -3,8 +3,13 @@
 	import {onMount} from "svelte";
 	import {goto} from "$app/navigation";
 
+	import Editor from '@toast-ui/editor';
+	import '@toast-ui/editor/dist/toastui-editor.css';
+	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+
 	let isLogin = $state({});
 	let isPaidUser = $state({});
+	let editor = $state({});
 
 	async function memberCheck() {
 		const response = await fetch(`http://localhost:8080/member/check`, {
@@ -34,6 +39,7 @@
 			for (let pair of formData.entries()) {
 				jsonData[pair[0]] = pair[1];
 			}
+			jsonData['content'] = editor.getMarkdown();
 			jsonData['isPaid'] = jsonData['isPaid'] === 'on';
 
 			const response = await fetch(`http://localhost:8080/post`, {
@@ -68,6 +74,23 @@
 		await memberCheck();
 
 		await checkPermission();
+
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			editor = new Editor({
+				el: document.querySelector('#editor'),
+				previewStyle: 'vertical',
+				height: '25rem',
+				initialValue: "내용을 입력해주세요!",
+				theme: 'dark',
+			});
+		} else {
+			editor = new Editor({
+				el: document.querySelector('#editor'),
+				previewStyle: 'vertical',
+				initialValue: "내용을 입력해주세요!",
+				height: '25rem',
+			});
+		}
 	});
 
 </script>
@@ -95,9 +118,11 @@
 				<label for="title" class="form-label">제목</label>
 				<input class="input input-bordered input-primary mt-3 max-w-full" name="title" id="title" type="text" placeholder="제목을 입력해주세요."/>
 			</div>
+
 			<div class="flex flex-col m-5">
 				<label for="content" class="form-label">내용</label>
-				<textarea class="textarea textarea-primary mt-3 resize-none" name="content" id="content" rows="8" placeholder="내용을 입력해주세요."></textarea>
+				<div class="mt-3 border-primary border-round" id="editor"></div>
+				<textarea class="hidden" name="content" id="content"></textarea>
 			</div>
 			<div class="flex flex-col m-5">
 				<button type="submit" class="btn btn-primary mt-3">작성</button>
@@ -107,5 +132,8 @@
 </section>
 
 <style>
-
+	.border-round {
+		border-width: 1px;
+		border-radius: 0.35rem;
+	}
 </style>

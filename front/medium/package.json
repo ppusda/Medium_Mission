@@ -41,6 +41,7 @@
 	"type": "module",
 	"dependencies": {
 		"@sveltejs/adapter-node": "^2.0.2",
+		"@toast-ui/editor": "^3.2.2",
 		"toastr": "^2.1.4"
 	}
 }

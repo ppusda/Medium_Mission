@@ -3,6 +3,10 @@
 	import {onMount} from "svelte";
 	import {page} from "$app/stores";
 	import {goto} from "$app/navigation";
+	import Editor from '@toast-ui/editor';
+	import '@toast-ui/editor/dist/toastui-editor.css';
+	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+
 
 	let postId = $state({});
 	let postData = $state({});
@@ -11,6 +15,8 @@
 	let isLogin = $state({});
 	let isPaidUser = $state({});
 	let loginUsername = $state({});
+
+	let editor = $state({});
 
 	async function memberCheck() {
 		const response = await fetch(`http://localhost:8080/member/check`, {
@@ -58,6 +64,7 @@
 		for (let pair of formData.entries()) {
 			jsonData[pair[0]] = pair[1];
 		}
+		jsonData['content'] = editor.getMarkdown();
 		jsonData['isPaid'] = jsonData['isPaid'] === 'on' || isPaidPost;
 
 		if (formData) {
@@ -99,6 +106,23 @@
 		await getPost();
 
 		await checkPermission();
+
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			editor = new Editor({
+				el: document.querySelector('#editor'),
+				previewStyle: 'vertical',
+				height: '25rem',
+				initialValue: postData.content,
+				theme: 'dark',
+			});
+		} else {
+			editor = new Editor({
+				el: document.querySelector('#editor'),
+				previewStyle: 'vertical',
+				initialValue: postData.content,
+				height: '25rem',
+			});
+		}
 	});
 
 </script>
@@ -131,7 +155,8 @@
 			</div>
 			<div class="flex flex-col m-5">
 				<label for="content" class="form-label">내용</label>
-				<textarea class="textarea textarea-primary mt-3 resize-none" name="content" id="content" rows="8" value="{postData.content}" placeholder="내용을 입력해주세요."></textarea>
+				<div class="mt-3 border-primary border-round" id="editor"></div>
+				<textarea class="hidden" name="content" id="content"></textarea>
 			</div>
 			<div class="flex flex-col m-5">
 				<button type="submit" class="btn btn-primary mt-3">작성</button>
@@ -141,5 +166,8 @@
 </section>
 
 <style>
-
+	.border-round {
+		border-width: 1px;
+		border-radius: 0.35rem;
+	}
 </style>
