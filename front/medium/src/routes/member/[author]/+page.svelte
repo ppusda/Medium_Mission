@@ -8,6 +8,7 @@
 	let currentPage = $state({});
 	let totalPages = $state({});
 	let postListData = $state([]);
+	let isPaidPostUser = $state({});
 	let author = $state({});
 
 	let isLogin = $state({});
@@ -68,8 +69,10 @@
 		if (jsonResponse) {
 			postListData = postListData.concat(jsonResponse.content);
 			totalPages = jsonResponse.totalPages;
+
 			postListData.forEach(async (post) => {
 				post.content = formatContent(post.content);
+				isPaidPostUser = post.isPaidUser;
 			});
 		}
 	}
@@ -78,6 +81,8 @@
 	onMount(async () => {
 		currentPage = 0;
 		author = $page.params['author'];
+		isPaidPostUser = false;
+
 		window.addEventListener('scroll', handleScroll);
 		await memberCheck();
 		await getAuthorPostList();
@@ -103,7 +108,11 @@
 
 			<div class="card w-10/12 bg-neutral text-neutral-content mt-5 ml-0">
 				<div class="card-body">
-					<h2 class="card-title">{author}</h2>
+					{#if isPaidPostUser}
+						<h2 class="card-title">🌟 {author}</h2>
+					{:else}
+						<h2 class="card-title">{author}</h2>
+					{/if}
 					<div class="flex flex-col justify-center">
 						{#if loginUsername}
 							{#if loginUsername === author}

@@ -9,6 +9,7 @@ public record PostResponse(
         String content,
         String title,
         String author,
+        Boolean isPaidUser,
         Long recommendCount,
         Long viewCount,
         Boolean isPaid,
