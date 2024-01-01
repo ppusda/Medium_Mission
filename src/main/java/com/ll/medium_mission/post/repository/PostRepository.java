@@ -8,5 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Page<Post> findAllByAuthor(Member author, Pageable pageable);
+    Page<Post> findAllByOrderByModifiedDateDesc(Pageable pageable);
+    Page<Post> findAllByAuthorOrderByModifiedDateDesc(Member author, Pageable pageable);
 }

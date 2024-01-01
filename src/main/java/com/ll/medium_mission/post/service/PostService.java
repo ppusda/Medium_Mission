@@ -37,13 +37,13 @@ public class PostService {
     public Page<PostResponse> getPosts(int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
-        return convertToPageResponse(postRepository.findAll(pageable));
+        return convertToPageResponse(postRepository.findAllByOrderByModifiedDateDesc(pageable));
     }
 
     @Transactional
     public Page<PostResponse> getAuthorsPosts(Member author, int page) {
         Pageable pageable = PageRequest.of(page, 5);
-        return convertToPageResponse(postRepository.findAllByAuthor(author, pageable));
+        return convertToPageResponse(postRepository.findAllByAuthorOrderByModifiedDateDesc(author, pageable));
     }
 
     @Transactional

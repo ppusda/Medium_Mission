@@ -126,10 +126,15 @@
 					<div class="hero bg-base-200">
 						<div class="hero-content flex-col w-full lg:flex-row">
 							<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="max-w-sm rounded-lg shadow-2xl m-3" />
-							<div class="flex flex-col w-full">
+							<div class="flex flex-col w-full justify-between">
 								<h1 class="text-4xl font-bold">{data.title}</h1>
 								<p class="py-6">{data.content}</p>
-								<a class="btn btn-primary" href="/post/{data.id}">Read Post</a>
+								<div class="flex flex-row justify-between items-center">
+									<a class="btn btn-primary w-10/12" href="/post/{data.id}">Read Post</a>
+									{#if data.isPaid}
+										<p>🌟 Member-Only</p>
+									{/if}
+								</div>
 							</div>
 						</div>
 					</div>
