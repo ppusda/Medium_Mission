@@ -67,6 +67,37 @@
 		}
 	}
 
+	async function uploadImage(formData) {
+		const response = await fetch('http://localhost:8080/tui/image', {
+			method : 'POST',
+			credentials: 'include',
+			body : formData,
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			toastWarning(errorData.message);
+			return;
+		}
+
+		return await response.text();
+	}
+
+	async function downloadImage(filename) {
+		const response = await fetch(`http://localhost:8080/tui/image?filename=${filename}`, {
+			method : 'GET',
+			credentials: 'include',
+		});
+
+		if (!response.ok) {
+			const errorData = await response.json();
+			toastWarning(errorData.message);
+			return;
+		}
+
+		return response.url;
+	}
+
 	onMount(async () => {
 		const { default: Editor } = await import('@toast-ui/editor');
 
@@ -84,6 +115,21 @@
 				height: '30rem',
 				initialValue: "내용을 입력해주세요!",
 				theme: 'dark',
+				hooks: {
+					async addImageBlobHook(blob, callback) {
+						try {
+							const formData = new FormData();
+							formData.append('image', blob);
+
+							const filename = await uploadImage(formData);
+							const imageUrl = await downloadImage(filename);
+
+							callback(imageUrl, 'image');
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				},
 			});
 		} else {
 			editor = new Editor({
@@ -91,10 +137,24 @@
 				previewStyle: 'vertical',
 				initialValue: "내용을 입력해주세요!",
 				height: '30rem',
+				hooks: {
+					async addImageBlobHook(blob, callback) {
+						try {
+							const formData = new FormData();
+							formData.append('image', blob);
+
+							const filename = await uploadImage(formData);
+							const imageUrl = await downloadImage(filename);
+
+							callback(imageUrl, 'image');
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				},
 			});
 		}
 	});
-
 </script>
 
 <svelte:head>

@@ -20,3 +20,4 @@ spring:
 
 medium:
   domain: medium.bbgk.me
+  path: /medium/images/
