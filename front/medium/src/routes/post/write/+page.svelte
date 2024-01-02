@@ -3,7 +3,6 @@
 	import {onMount} from "svelte";
 	import {goto} from "$app/navigation";
 
-	import Editor from '@toast-ui/editor';
 	import '@toast-ui/editor/dist/toastui-editor.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 
@@ -74,6 +73,8 @@
 		await memberCheck();
 
 		await checkPermission();
+
+		const { default: Editor } = await import('@toast-ui/editor');
 
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			editor = new Editor({
