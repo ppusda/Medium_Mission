@@ -1,8 +1,24 @@
 <script>
-	import { page } from "$app/stores";
 	import {onMount} from "svelte";
-	import {toastWarning} from "../../../app.js";
+	import { page } from "$app/stores";
 	import {goto} from "$app/navigation";
+	import {toastWarning} from "../../../app.js";
+
+	import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+	import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
+
+	import Prism from 'prismjs';
+	import 'prismjs/themes/prism.css';
+	import 'prismjs/components/prism-c.js';
+	import 'prismjs/components/prism-sql.js';
+	import 'prismjs/components/prism-bash.js';
+	import 'prismjs/components/prism-java.js';
+	import 'prismjs/components/prism-kotlin.js';
+	import 'prismjs/components/prism-python.js';
+	import 'prismjs/components/prism-markup.js';
+	import 'prismjs/components/prism-javascript.js';
+	import 'prismjs/components/prism-typescript.js';
 
 	let postId =  $state({});
 	let postData = $state({});
@@ -14,6 +30,8 @@
 	let isLogin = $state({});
 	let isPaidUser = $state({});
 	let loginUsername = $state({});
+
+	let viewer = $state({});
 
 	function formatDate(datePhrase) {
 		const date = new Date(datePhrase);
@@ -132,6 +150,9 @@
 	}
 
 	onMount(async () => {
+		const { default: Viewer } = await import('@toast-ui/editor/dist/toastui-editor-viewer');
+		const { default: codeSyntaxHighlight } = await import('@toast-ui/editor-plugin-code-syntax-highlight');
+
 		postId = $page.params['pid'];
 		recommendCheck = false;
 		isPaidPost = false;
@@ -145,6 +166,29 @@
 		}
 
 		await checkMembership();
+
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			viewer = new Viewer({
+				toolbarItems: [],
+				el: document.querySelector('#viewer'),
+				previewStyle: 'tab',
+				initialValue: postData.content,
+				hideModeSwitch: true,
+				height: '40rem',
+				theme: "dark",
+				plugins: [[codeSyntaxHighlight, { highlighter: Prism }]]
+			});
+		} else {
+			viewer = new Viewer({
+				toolbarItems: [],
+				el: document.querySelector('#viewer'),
+				previewStyle: 'tab',
+				initialValue: postData.content,
+				hideModeSwitch: true,
+				height: '40rem',
+				plugins: [[codeSyntaxHighlight, { highlighter: Prism }]]
+			});
+		}
 	});
 
 </script>
@@ -207,10 +251,11 @@
 					{/if}
 				</div>
 			</div>
-			<div class="card bg-base-100 shadow-xl border m-5 w-7/12">
+			<div class="card bg-base-300 shadow-xl border m-5 w-7/12">
 				<div class="card-body flex flex-col">
-					<p style="white-space: pre-wrap;">{postData.content}</p>
+					<div id="viewer">
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>

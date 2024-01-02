@@ -98,22 +98,23 @@
 	}
 
 	onMount(async () => {
+		const { default: Editor } = await import('@toast-ui/editor');
+
 		postId = $page.params['pid'];
 		isLogin = false;
-		isPaidUser = false;
 
+		isPaidUser = false;
 		await memberCheck();
+
 		await getPost();
 
 		await checkPermission();
-
-		const { default: Editor } = await import('@toast-ui/editor');
 
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
 			editor = new Editor({
 				el: document.querySelector('#editor'),
 				previewStyle: 'vertical',
-				height: '25rem',
+				height: '30rem',
 				initialValue: postData.content,
 				theme: 'dark',
 			});
@@ -122,7 +123,7 @@
 				el: document.querySelector('#editor'),
 				previewStyle: 'vertical',
 				initialValue: postData.content,
-				height: '25rem',
+				height: '30rem',
 			});
 		}
 	});
