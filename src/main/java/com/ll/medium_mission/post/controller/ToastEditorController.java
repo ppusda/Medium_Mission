@@ -46,6 +46,7 @@ public class ToastEditorController {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         String extension = orgFilename.substring(orgFilename.lastIndexOf(".") + 1);
         String saveFilename = uuid + "." + extension;
+        path = path + principal.getName();
         String fileFullPath = Paths.get(path, saveFilename).toString();
         log.info(fileFullPath);
 
@@ -64,7 +65,6 @@ public class ToastEditorController {
         }
     }
 
-    @PreAuthorize("isAuthenticated()")
     @GetMapping(value = "/image", produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public byte[] printEditorImage(@RequestParam final String filename) {
         String fileFullPath = Paths.get(path, filename).toString();
