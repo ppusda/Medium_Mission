@@ -79,6 +79,7 @@ public class InitData {
             postRepository.save(Post.builder()
                     .title(FAQ_TITLE)
                     .content(FAQ_CONTENT)
+                    .isPaid(false)
                     .author(member)
                     .build()
             );
@@ -86,6 +87,7 @@ public class InitData {
             postRepository.save(Post.builder()
                     .title(TIP_TITLE)
                     .content(TIP_CONTENT)
+                    .isPaid(false)
                     .author(member)
                     .build()
             );
