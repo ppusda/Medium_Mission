@@ -4,15 +4,14 @@ import com.ll.medium_mission.global.config.AppConfig;
 import com.ll.medium_mission.global.exception.ImageDownloadException;
 import com.ll.medium_mission.global.exception.ImageNotFoundException;
 import com.ll.medium_mission.global.exception.ImageUploadException;
-import com.ll.medium_mission.member.entity.Member;
-import com.ll.medium_mission.member.service.MemberService;
+import com.ll.medium_mission.post.util.PathUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,16 +27,16 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/tui")
 public class ToastEditorController {
     private String path;
-    private final MemberService memberService;
+    private final PathUtil pathUtil;
 
-    public ToastEditorController(AppConfig appConfig, MemberService memberService) {
+    public ToastEditorController(AppConfig appConfig, PathUtil pathUtil) {
         this.path = appConfig.getPath();
-        this.memberService = memberService;
+        this.pathUtil = pathUtil;
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/image")
-    public String uploadEditorImage(@RequestParam final MultipartFile image, Principal principal) {
+    public String uploadEditorImage(@RequestParam final MultipartFile image) {
         if (image.isEmpty()) {
             return "";
         }
@@ -46,11 +45,11 @@ public class ToastEditorController {
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         String extension = orgFilename.substring(orgFilename.lastIndexOf(".") + 1);
         String saveFilename = uuid + "." + extension;
-        path = path + principal.getName();
-        String fileFullPath = Paths.get(path, saveFilename).toString();
-        log.info(fileFullPath);
+        String datePath = pathUtil.getDatePath(path, String.valueOf(LocalDate.now()));
 
-        File dir = new File(path);
+        String fileFullPath = Paths.get(datePath, saveFilename).toString();
+
+        File dir = new File(datePath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -67,16 +66,15 @@ public class ToastEditorController {
 
     @GetMapping(value = "/image", produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public byte[] printEditorImage(@RequestParam final String filename) {
-        String fileFullPath = Paths.get(path, filename).toString();
+        String datePath = pathUtil.getDatePath(path, String.valueOf(LocalDate.now()));
+        String fileFullPath = Paths.get(datePath, filename).toString();
 
-        // 파일이 없는 경우 예외 throw
         File uploadedFile = new File(fileFullPath);
         if (!uploadedFile.exists()) {
             throw new ImageNotFoundException();
         }
 
         try {
-            // 이미지 파일을 byte[]로 변환 후 반환
             return Files.readAllBytes(uploadedFile.toPath());
 
         } catch (IOException e) {
