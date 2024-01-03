@@ -1,44 +1,23 @@
 <script>
-	import {toastWarning} from "../../../../app.js";
+	import {toastWarning} from "../../../../toastr.js";
 	import {onMount} from "svelte";
 	import {page} from "$app/stores";
 	import {goto} from "$app/navigation";
 
+	import {memberCheck} from "../../../../member.js";
+	import {isLogin, isPaidUser, loginUsername} from "../../../../stores.js";
+
 	import '@toast-ui/editor/dist/toastui-editor.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
-
 
 	let postId = $state({});
 	let postData = $state({});
 	let isPaidPost = $state({});
 
-	let isLogin = $state({});
-	let isPaidUser = $state({});
-	let loginUsername = $state({});
-
 	let editor = $state({});
 
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			if (data.isPaid) {
-				isPaidUser = !!data.isPaid;
-			}
-
-			isLogin = data.result;
-		}
-	}
-
 	async function checkPermission() {
-		if (!isLogin && loginUsername !== postData.author) {
+		if (!$isLogin && $loginUsername !== postData.author) {
 			toastWarning("로그인이 필요합니다.");
 			await goto(`/post/${postId}`);
 		}
@@ -101,13 +80,9 @@
 		const { default: Editor } = await import('@toast-ui/editor');
 
 		postId = $page.params['pid'];
-		isLogin = false;
 
-		isPaidUser = false;
 		await memberCheck();
-
 		await getPost();
-
 		await checkPermission();
 
 		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
@@ -142,7 +117,7 @@
 				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
 				글 수정
 			</h2>
-			{#if isPaidUser}
+			{#if $isPaidUser}
 				<div class="py-2 m-5">
 					<label class="cursor-pointer label">
 						<span class="label-text mr-3">유료 글로 전환</span>

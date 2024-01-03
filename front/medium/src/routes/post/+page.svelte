@@ -1,20 +1,20 @@
 <script>
-	import {toastWarning, toastNotice} from "../../app.js";
+	import {toastWarning, toastNotice} from "../../toastr.js";
 	import {onDestroy, onMount} from "svelte";
 	import {goto} from "$app/navigation";
 
 	import {remark} from 'remark';
 	import strip from 'strip-markdown';
 
+	import {memberCheck} from "../../member.js";
+	import {isLogin} from "../../stores.js";
+
 	const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 	let currentPage = $state({});
 	let totalPages = $state({});
+
 	let postListData = $state([]);
 	let hotPostListData = $state([]);
-
-	let isLogin = $state({});
-	let isPaid = $state({});
-	let loginUsername = $state({});
 	let searchKeyword = "";
 
 	const NextPage = () => {
@@ -33,25 +33,9 @@
 		}
 	}
 
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			isLogin = data.result;
-			isPaid = data.isPaid;
-		}
-	}
-
 	async function moveToWritePostPage() {
 		await memberCheck();
-		if (isLogin) {
+		if ($isLogin) {
 			await goto('/post/write');
 			return;
 		}

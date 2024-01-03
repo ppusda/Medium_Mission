@@ -1,34 +1,17 @@
 <script>
-  import {toastNotice, toastWarning} from "../app.js";
+  import {toastNotice, toastWarning} from "../toastr.js";
   import {onMount} from "svelte";
   import {goto} from "$app/navigation";
 
+  import {memberCheck} from "../member.js";
+  import {loginUsername, isLogin} from "../stores.js";
+
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
-  let loginUsername = $state({});
-  let isLogin = $state({});
 
-  async function memberCheck() {
-    const response = await fetch(`http://localhost:8080/member/check`, {
-      credentials: 'include',
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-
-      if (data.nickname) {
-        loginUsername = data.nickname;
-      }
-
-      isLogin = data.result;
-    } else {
-      toastWarning("로그인이 필요합니다.");
-      await logout();
-    }
-  }
 
   async function moveToWritePostPage() {
     await memberCheck();
-    if (isLogin) {
+    if ($isLogin) {
       await goto('/post/write');
       return;
     }
@@ -43,8 +26,8 @@
 
  async function moveToMyPage() {
     await memberCheck();
-    if (isLogin) {
-      window.location.href = `/member/${loginUsername}`;
+    if ($isLogin) {
+      window.location.href = `/member/${$loginUsername}`;
       return;
     }
     toastWarning("로그인이 필요합니다.");
@@ -58,7 +41,6 @@
   }
 
   onMount(async () => {
-    isLogin = false;
     await memberCheck();
   });
 
@@ -82,9 +64,9 @@
     <a class="btn btn-ghost text-xl" href="/">Medium</a>
   </div>
   <div class="navbar-end">
-    {#if isLogin}
+    {#if $isLogin}
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUsername} 님, 환영합니다!</div>
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{$loginUsername} 님, 환영합니다!</div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
           <li><a on:click={moveToWritePostPage}>글 작성</a></li>
           <li><a on:click={moveToMyPage}>마이페이지</a></li>

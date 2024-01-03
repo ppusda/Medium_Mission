@@ -1,26 +1,11 @@
 <script>
-
 	import {onMount} from "svelte";
 
-	let isLogin = $state({});
-	let loginUsername = $state({});
+	import {memberCheck} from "../member.js";
+	import {isLogin} from "../stores.js";
+
 	let postListData = $state({});
 	let postCount = $state({});
-
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			isLogin = data.result;
-		}
-	}
 
 	async function getHotPostList() {
 		const response = await fetch(`http://localhost:8080/post/popular-posts`, {
@@ -59,7 +44,6 @@
 	}
 
 	onMount(async () => {
-		isLogin = false;
 		await memberCheck();
 		await getHotPostList();
 
@@ -82,7 +66,7 @@
 					<div>
 						<h1 class="text-7xl font-bold">Medium Project</h1>
 						<p class="py-6">유료 글 포스팅을 할 수 있는 사이트 입니다.</p>
-						{#if isLogin}
+						{#if $isLogin}
 							<a class="btn btn-primary" href="/post">Start Read</a>
 						{:else}
 							<a class="btn btn-primary" href="/member/login">Get Started</a>

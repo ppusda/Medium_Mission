@@ -1,29 +1,18 @@
 <script>
-	import {toastWarning} from "../../../app.js";
+	import {toastWarning} from "../../../toastr.js";
 	import {onMount} from "svelte";
 	import {goto} from "$app/navigation";
+
+	import {memberCheck} from "../../../member.js";
+	import {isLogin, isPaidUser} from "../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
 
-	let isLogin = $state({});
-	let isPaidUser = $state({});
 	let editor = $state({});
 
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			isPaidUser = !!data.isPaid;
-			isLogin = data.result;
-		}
-	}
-
 	async function checkPermission() {
-		if (!isLogin) {
+		if (!$isLogin) {
 			toastWarning("로그인이 필요합니다.");
 			await goto(`/post`);
 		}
@@ -101,9 +90,6 @@
 	onMount(async () => {
 		const { default: Editor } = await import('@toast-ui/editor');
 
-		isLogin = false;
-		isPaidUser = false;
-
 		await memberCheck();
 
 		await checkPermission();
@@ -167,7 +153,7 @@
 		<form on:submit={handleSubmit} method="post">
 			<div class="flex flex-row justify-between">
 				<h2 class="text-3xl font-bold py-2 m-5">글 작성</h2>
-				{#if isPaidUser}
+				{#if $isPaidUser}
 					<div class="py-2 m-5">
 						<label class="cursor-pointer label">
 							<span class="label-text mr-3">유료 글로 작성</span>

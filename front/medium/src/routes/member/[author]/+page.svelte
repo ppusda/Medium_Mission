@@ -1,6 +1,9 @@
 <script>
-	import {toastWarning, toastNotice} from "../../../app.js";
+	import {toastWarning, toastNotice} from "../../../toastr.js";
 	import {onDestroy, onMount} from "svelte";
+
+	import {memberCheck} from "../../../member.js";
+	import {isLogin, loginUsername} from "../../../stores.js";
 
 	import {page} from "$app/stores";
 	import {goto} from "$app/navigation";
@@ -14,24 +17,6 @@
 	let postListData = $state([]);
 	let isPaidPostUser = $state({});
 	let author = $state({});
-
-	let isLogin = $state({});
-	let loginUsername = $state({});
-
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			isLogin = data.result;
-		}
-	}
 
 	const NextPage = () => {
 		if (currentPage >= totalPages-1) {
@@ -66,7 +51,7 @@
 
 	async function moveToModifyMemberPage() {
 		await memberCheck();
-		if (isLogin) {
+		if ($isLogin) {
 			await goto(`/member/${author}/modify`);
 			return;
 		}
@@ -134,10 +119,8 @@
 						<h2 class="card-title">{author}</h2>
 					{/if}
 					<div class="flex flex-col justify-center">
-						{#if loginUsername}
-							{#if loginUsername === author}
-								<a class="btn" on:click={moveToModifyMemberPage}>프로필 수정</a>
-							{/if}
+						{#if $loginUsername === author}
+							<a class="btn" on:click={moveToModifyMemberPage}>프로필 수정</a>
 						{/if}
 					</div>
 				</div>

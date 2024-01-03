@@ -1,5 +1,5 @@
 <script>
-  import {toastWarning} from "../../../app.js";
+  import {toastWarning} from "../../../toastr.js";
 
   async function handleSubmit(event) {
     event.preventDefault();

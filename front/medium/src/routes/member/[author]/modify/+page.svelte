@@ -1,38 +1,17 @@
 <script>
-  import {toastWarning} from "../../../../app.js";
+  import {toastWarning} from "../../../../toastr.js";
   import { goto } from '$app/navigation';
   import {onMount} from "svelte";
   import {page} from "$app/stores";
 
+  import {memberCheck} from "../../../../member.js";
+  import {isLogin, loginUsername} from "../../../../stores.js";
+
   let author = $state({});
   let memberData = $state({});
 
-  let isLogin = $state({});
-  let isPaidUser = $state({});
-  let loginUsername = $state({});
-
-  async function memberCheck() {
-    const response = await fetch(`http://localhost:8080/member/check`, {
-      credentials: 'include',
-    });
-    if (response.ok) {
-      const data = await response.json();
-
-      if (data.nickname) {
-        loginUsername = data.nickname;
-      }
-
-      if (data.isPaid) {
-        isPaidUser = !!data.isPaid;
-      }
-
-      isLogin = data.result;
-    }
-  }
-
   async function checkPermission() {
-    console.log(isLogin);
-    if (!isLogin || loginUsername !== author) {
+    if (!$isLogin || $loginUsername !== author) {
       toastWarning("로그인이 필요합니다.");
       await goto(`/member/${author}`);
     }
@@ -88,7 +67,6 @@
 
   onMount(async () => {
     author = $page.params['author'];
-    isLogin = false;
 
     await memberCheck();
     await checkPermission();

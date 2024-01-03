@@ -1,31 +1,13 @@
 <script>
-  import {toastWarning} from "../../../app.js";
+  import {toastWarning} from "../../../toastr.js";
   import {onMount} from "svelte";
-  import {goto} from "$app/navigation";
 
-  let isLogin = $state({});
-  let isPaidUser = $state({});
-  let loginUsername = $state({});
-
-  async function memberCheck() {
-    const response = await fetch(`http://localhost:8080/member/check`, {
-      credentials: 'include',
-    });
-    if (response.ok) {
-      const data = await response.json();
-
-      if (data.nickname) {
-        loginUsername = data.nickname;
-      }
-
-      isPaidUser = !!data.isPaid;
-      isLogin = data.result;
-    }
-  }
+  import {memberCheck} from "../../../member.js";
+  import {isLogin, isPaidUser} from "../../../stores.js";
 
   async function registerMembership() {
     await memberCheck();
-    if (isLogin) {
+    if ($isLogin) {
       await fetch(`http://localhost:8080/member/membership`, {
         method: 'POST',
         credentials: 'include',
@@ -39,21 +21,19 @@
 
   async function cancelMembership() {
     await memberCheck();
-    if (isLogin) {
+    if ($isLogin) {
       await fetch(`http://localhost:8080/member/membership`, {
         method: 'DELETE',
         credentials: 'include',
       });
 
       await memberCheck();
-      await goto('/member/membership');
       return;
     }
     toastWarning("로그인이 필요합니다.")
   }
 
   onMount(async () => {
-    isPaidUser = false;
     await memberCheck();
   });
 
@@ -103,7 +83,7 @@
       </div>
     </div>
 
-    {#if !isPaidUser}
+    {#if !$isPaidUser}
       <div class="diff-resizer basic_resizer"></div>
     {:else}
       <div class="diff-resizer member_resizer"></div>
@@ -111,7 +91,7 @@
   </div>
 
   <div class="w-full">
-    {#if !isPaidUser}
+    {#if !$isPaidUser}
       <a class="btn btn-warning w-full" on:click={registerMembership}>2,000₩ 으로 시작하기!</a>
     {:else}
       <label for="cancel_membership_modal" class="btn btn-error w-full">멤버쉽 해지하기</label>

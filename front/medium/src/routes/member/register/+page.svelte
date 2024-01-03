@@ -1,5 +1,5 @@
 <script>
-  import {toastWarning} from "../../../app.js";
+  import {toastWarning} from "../../../toastr.js";
   import {goto} from "$app/navigation";
 
   async function handleSubmit(event) {

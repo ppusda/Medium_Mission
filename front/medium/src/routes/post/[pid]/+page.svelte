@@ -2,7 +2,10 @@
 	import {onMount} from "svelte";
 	import { page } from "$app/stores";
 	import {goto} from "$app/navigation";
-	import {toastWarning} from "../../../app.js";
+	import {toastWarning} from "../../../toastr.js";
+
+	import {memberCheck} from "../../../member.js";
+	import {isLogin, isPaidUser, loginUsername} from "../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -27,10 +30,6 @@
 	let recommendCheck = $state({});
 	let recommendCount = $state({});
 
-	let isLogin = $state({});
-	let isPaidUser = $state({});
-	let loginUsername = $state({});
-
 	let viewer = $state({});
 
 	function formatDate(datePhrase) {
@@ -42,25 +41,6 @@
 			hour: '2-digit',
 			minute: '2-digit',
 		});
-	}
-
-	async function memberCheck() {
-		const response = await fetch(`http://localhost:8080/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			if (data.isPaid) {
-				isPaidUser = !!data.isPaid;
-			}
-
-			isLogin = data.result;
-		}
 	}
 
 	async function checkRecommend() {
@@ -81,9 +61,7 @@
 		});
 		postData = await response.json();
 
-		if (postData.isPaid) {
-			isPaidPost = postData.isPaid;
-		}
+		isPaidPost = postData.isPaid;
 
 		if (postData.createDate) {
 			postData.createDate = formatDate(postData.createDate);
@@ -98,7 +76,7 @@
 
 	async function moveToModifyPostPage() {
 		await memberCheck();
-		if (isLogin) {
+		if ($isLogin) {
 			await goto(`/post/${postId}/modify`);
 			return;
 		}
@@ -107,7 +85,7 @@
 
 	async function removePost() {
 		await memberCheck();
-		if (isLogin) {
+		if ($isLogin) {
 			const response = await fetch(`http://localhost:8080/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
@@ -128,7 +106,7 @@
 
 	async function recommendPost() {
 		await memberCheck();
-		if (isLogin) {
+		if ($isLogin) {
 			await fetch(`http://localhost:8080/post/${postId}/recommend`, {
 				method: 'POST',
 				credentials: 'include',
@@ -142,7 +120,7 @@
 
 	async function checkMembership() {
 		if (isPaidPost) {
-			if (!isPaidUser) {
+			if (!$isPaidUser) {
 				toastWarning("유료 회원만 글을 볼 수 있습니다.");
 				window.history.back();
 			}
@@ -155,13 +133,11 @@
 
 		postId = $page.params['pid'];
 		recommendCheck = false;
-		isPaidPost = false;
-		isPaidUser = false;
 
 		await memberCheck();
 		await getPost();
 
-		if (isLogin) {
+		if ($isLogin) {
 			await checkRecommend();
 		}
 
@@ -234,7 +210,7 @@
 						<p>{recommendCount}</p>
 					</div>
 					{#if postData.author}
-						{#if loginUsername === postData.author}
+						{#if $loginUsername === postData.author}
 							<a class="btn btn-ghost border-white mr-3" on:click={moveToModifyPostPage}>수정</a>
 							<a href="#remove_post_modal" class="btn btn-ghost border-white">삭제</a>
 							<div class="modal" role="dialog" id="remove_post_modal">
