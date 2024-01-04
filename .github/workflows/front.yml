@@ -6,7 +6,7 @@ on:
       - 'front/medium/**'
       - 'front/medium/Dockerfile'
     branches:
-      - main
+      - second
 jobs:
   makeTagAndRelease:
     runs-on: ubuntu-latest
