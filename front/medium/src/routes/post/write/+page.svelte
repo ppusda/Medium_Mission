@@ -4,7 +4,7 @@
 	import {goto} from "$app/navigation";
 
 	import {memberCheck} from "../../../member.js";
-	import {isLogin, isPaidUser} from "../../../stores.js";
+	import {isLogin, isPaidUser, baseUrl} from "../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -30,7 +30,7 @@
 			jsonData['content'] = editor.getMarkdown();
 			jsonData['isPaid'] = jsonData['isPaid'] === 'on';
 
-			const response = await fetch(`http://localhost:8080/post`, {
+			const response = await fetch(`${$baseUrl}/post`, {
 				method: 'POST',
 				credentials: 'include',
 				headers: {
@@ -57,7 +57,7 @@
 	}
 
 	async function uploadImage(formData) {
-		const response = await fetch('http://localhost:8080/tui/image', {
+		const response = await fetch(`${$baseUrl}/tui/image`, {
 			method : 'POST',
 			credentials: 'include',
 			body : formData,
@@ -73,7 +73,7 @@
 	}
 
 	async function downloadImage(filename) {
-		const response = await fetch(`http://localhost:8080/tui/image?filename=${filename}`, {
+		const response = await fetch(`${$baseUrl}/tui/image?filename=${filename}`, {
 			method : 'GET',
 			credentials: 'include',
 		});

@@ -5,7 +5,7 @@
 	import {toastWarning} from "../../../toastr.js";
 
 	import {memberCheck} from "../../../member.js";
-	import {isLogin, isPaidUser, loginUsername} from "../../../stores.js";
+	import {isLogin, isPaidUser, loginUsername, baseUrl} from "../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor-viewer.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -44,7 +44,7 @@
 	}
 
 	async function checkRecommend() {
-		const response = await fetch(`http://localhost:8080/post/${postId}/recommend`, {
+		const response = await fetch(`${$baseUrl}/post/${postId}/recommend`, {
 			credentials: 'include',
 		});
 		const responseData = await response.json();
@@ -56,7 +56,7 @@
 	}
 
 	async function getPost() {
-		const response = await fetch(`http://localhost:8080/post/${postId}`, {
+		const response = await fetch(`${$baseUrl}/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
@@ -86,7 +86,7 @@
 	async function removePost() {
 		await memberCheck();
 		if ($isLogin) {
-			const response = await fetch(`http://localhost:8080/post/${postId}`, {
+			const response = await fetch(`${$baseUrl}/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			});
@@ -107,7 +107,7 @@
 	async function recommendPost() {
 		await memberCheck();
 		if ($isLogin) {
-			await fetch(`http://localhost:8080/post/${postId}/recommend`, {
+			await fetch(`${$baseUrl}/post/${postId}/recommend`, {
 				method: 'POST',
 				credentials: 'include',
 			});

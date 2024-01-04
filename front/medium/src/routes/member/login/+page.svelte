@@ -1,6 +1,8 @@
 <script>
   import {toastWarning} from "../../../toastr.js";
 
+  import {baseUrl} from "../../../stores.js";
+
   async function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
@@ -11,7 +13,7 @@
         jsonData[pair[0]] = pair[1];
       }
 
-      const response = await fetch(`http://localhost:8080/member/login`, {
+      const response = await fetch(`${$baseUrl}/member/login`, {
         method: 'POST',
         credentials: 'include',
         headers: {

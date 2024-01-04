@@ -1,7 +1,12 @@
-import {loginUsername, isPaidUser, isLogin} from "./stores.js";
+import {loginUsername, isPaidUser, isLogin, baseUrl} from "./stores.js";
+
+let url = '';
+const unsubscribe = baseUrl.subscribe(value => {
+  url = value;
+});
 
 export async function memberCheck() {
-  const response = await fetch(`http://localhost:8080/member/check`, {
+  const response = await fetch(`${url}/member/check`, {
     credentials: 'include',
   });
   if (response.ok) {

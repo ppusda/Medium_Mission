@@ -2,13 +2,13 @@
 	import {onMount} from "svelte";
 
 	import {memberCheck} from "../member.js";
-	import {isLogin} from "../stores.js";
+	import {isLogin, baseUrl} from "../stores.js";
 
 	let postListData = $state({});
 	let postCount = $state({});
 
 	async function getHotPostList() {
-		const response = await fetch(`http://localhost:8080/post/popular-posts`, {
+		const response = await fetch(`${$baseUrl}/post/popular-posts`, {
 			credentials: 'include',
 		});
 		const jsonResponse = await response.json();

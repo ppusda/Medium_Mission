@@ -7,7 +7,7 @@
 	import strip from 'strip-markdown';
 
 	import {memberCheck} from "../../member.js";
-	import {isLogin} from "../../stores.js";
+	import {isLogin, baseUrl} from "../../stores.js";
 
 	const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 	let currentPage = $state({});
@@ -59,8 +59,8 @@
 
 	async function getPostList(keyword = '') {
 		const url = keyword ?
-				`http://localhost:8080/post/search?page=${currentPage}&keyword=${keyword}` :
-				`http://localhost:8080/post?page=${currentPage}`;
+				`${$baseUrl}/post/search?page=${currentPage}&keyword=${keyword}` :
+				`${$baseUrl}/post?page=${currentPage}`;
 
 		const response = await fetch(url, {
 			credentials: 'include',
@@ -88,7 +88,7 @@
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`http://localhost:8080/post/popular-posts`);
+		const response = await fetch(`${$baseUrl}/post/popular-posts`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			hotPostListData = jsonResponse.content;

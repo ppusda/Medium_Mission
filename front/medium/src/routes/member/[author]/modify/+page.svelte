@@ -5,7 +5,7 @@
   import {page} from "$app/stores";
 
   import {memberCheck} from "../../../../member.js";
-  import {isLogin, loginUsername} from "../../../../stores.js";
+  import {isLogin, loginUsername, baseUrl} from "../../../../stores.js";
 
   let author = $state({});
   let memberData = $state({});
@@ -18,7 +18,7 @@
   }
 
   async function getMember() {
-    const response = await fetch(`http://localhost:8080/member/profile`, {
+    const response = await fetch(`${$baseUrl}/member/profile`, {
       credentials: 'include',
     });
     memberData = await response.json();
@@ -34,7 +34,7 @@
     }
 
     if (formData) {
-      const response = await fetch(`http://localhost:8080/member/modify`, {
+      const response = await fetch(`${$baseUrl}/member/modify`, {
         method: 'POST',
         credentials: 'include',
         headers: {

@@ -5,7 +5,7 @@
 	import {goto} from "$app/navigation";
 
 	import {memberCheck} from "../../../../member.js";
-	import {isLogin, isPaidUser, loginUsername} from "../../../../stores.js";
+	import {isLogin, isPaidUser, loginUsername, baseUrl} from "../../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor.css';
 	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
@@ -24,7 +24,7 @@
 	}
 
 	async function getPost() {
-		const response = await fetch(`http://localhost:8080/post/${postId}`, {
+		const response = await fetch(`${$baseUrl}/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
@@ -47,7 +47,7 @@
 		jsonData['isPaid'] = jsonData['isPaid'] === 'on' || isPaidPost;
 
 		if (formData) {
-			const response = await fetch(`http://localhost:8080/post/${postId}`, {
+			const response = await fetch(`${$baseUrl}/post/${postId}`, {
 				method: 'PUT',
 				credentials: 'include',
 				headers: {

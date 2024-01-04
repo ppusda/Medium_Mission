@@ -3,11 +3,11 @@
   import {onMount} from "svelte";
 
   import {memberCheck} from "../../../member.js";
-  import {isLogin, isPaidUser} from "../../../stores.js";
+  import {isLogin, isPaidUser,baseUrl} from "../../../stores.js";
 
   async function registerMembership() {
     if ($isLogin) {
-      await fetch(`http://localhost:8080/member/membership`, {
+      await fetch(`${$baseUrl}/member/membership`, {
         method: 'POST',
         credentials: 'include',
       });
@@ -20,7 +20,7 @@
 
   async function cancelMembership() {
     if ($isLogin) {
-      await fetch(`http://localhost:8080/member/membership`, {
+      await fetch(`${$baseUrl}/member/membership`, {
         method: 'DELETE',
         credentials: 'include',
       });

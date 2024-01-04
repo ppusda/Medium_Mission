@@ -3,7 +3,7 @@
 	import {onDestroy, onMount} from "svelte";
 
 	import {memberCheck} from "../../../member.js";
-	import {isLogin, loginUsername} from "../../../stores.js";
+	import {isLogin, loginUsername, baseUrl} from "../../../stores.js";
 
 	import {page} from "$app/stores";
 	import {goto} from "$app/navigation";
@@ -59,7 +59,7 @@
 	}
 
 	async function getAuthorPostList() {
-		const response = await fetch(`http://localhost:8080/post/${author}/posts?page=${currentPage}`, {
+		const response = await fetch(`${$baseUrl}/post/${author}/posts?page=${currentPage}`, {
 			credentials: 'include',
 		});
 		const jsonResponse = await response.json();

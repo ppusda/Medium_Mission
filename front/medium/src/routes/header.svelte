@@ -4,7 +4,7 @@
   import {goto} from "$app/navigation";
 
   import {memberCheck} from "../member.js";
-  import {loginUsername, isLogin} from "../stores.js";
+  import {loginUsername, isLogin, baseUrl} from "../stores.js";
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 
@@ -34,7 +34,7 @@
   }
 
   async function logout() {
-    await fetch(`http://localhost:8080/member/logout`, {
+    await fetch(`${$baseUrl}/member/logout`, {
       method: 'DELETE',
       credentials: 'include',
     });
