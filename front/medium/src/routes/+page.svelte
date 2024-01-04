@@ -13,11 +13,20 @@
 		});
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
-			postListData = jsonResponse.content;
+			let formattedPostListData = [];
 
-			postListData.forEach(async (post) => {
-				post.content = formatContent(post.content);
-			});
+			for (let post of jsonResponse.content) {
+				let imageLinkMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
+				let imageLink = imageLinkMatch ? imageLinkMatch[1] : null;
+
+				formattedPostListData.push({
+					id: post.id,
+					title: post.title,
+					isPaid: post.isPaid,
+					image: imageLink
+				});
+			}
+			postListData = formattedPostListData;
 		}
 	}
 
@@ -96,8 +105,12 @@
 											{post.title}
 										</a>
 									</div>
-									<div class="h-min w-full">
-										<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+									<div class="flex flex-row w-full h-full justify-center">
+										{#if post.image}
+											<img src="{post.image}" class="max-h-32 rounded-lg shadow-2xl m-3" />
+										{:else}
+											<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="rounded-lg shadow-2xl m-3" />
+										{/if}
 									</div>
 								</div>
 							{/each}
@@ -107,7 +120,6 @@
 			</div>
 		</div>
 	</div>
-
 
 </section>
 
