@@ -6,7 +6,6 @@
   import {isLogin, isPaidUser} from "../../../stores.js";
 
   async function registerMembership() {
-    await memberCheck();
     if ($isLogin) {
       await fetch(`http://localhost:8080/member/membership`, {
         method: 'POST',
@@ -20,7 +19,6 @@
   }
 
   async function cancelMembership() {
-    await memberCheck();
     if ($isLogin) {
       await fetch(`http://localhost:8080/member/membership`, {
         method: 'DELETE',
