@@ -1,39 +1,53 @@
 <script>
-  import {toastWarning} from "../../../app.js";
+  import {toastWarning} from "../../../toastr.js";
+  import {goto} from "$app/navigation";
+
+  import {baseUrl} from "../../../stores.js";
 
   async function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
     if (formData) {
-      const response = await fetch(`https://api.medium.bbgk.me/member/join`, {
+      const jsonData = {};
+      for (let pair of formData.entries()) {
+        jsonData[pair[0]] = pair[1];
+      }
+
+      const response = await fetch(`${$baseUrl}/member/join`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData),
       });
 
       if (!response.ok) {
-        const validateData = await response.json();
+        const errorData = await response.json();
 
-        if (validateData.email) {
-          toastWarning(validateData.email);
+        if (errorData.email) {
+          toastWarning(errorData.email);
           return;
         }
-        if (validateData.nickname) {
-          toastWarning(validateData.nickname);
+        if (errorData.nickname) {
+          toastWarning(errorData.nickname);
           return;
         }
-        if (validateData.password) {
-          toastWarning(validateData.password);
+        if (errorData.password) {
+          toastWarning(errorData.password);
           return;
         }
-        if (validateData.passwordConfirm) {
-          toastWarning(validateData.passwordConfirm);
+        if (errorData.passwordConfirm) {
+          toastWarning(errorData.passwordConfirm);
           return;
         }
+
+        toastWarning(errorData.message);
+        return
       }
 
-      window.location.href = `/member/login`;
+      await goto(`/member/login`);
     }
   }
 

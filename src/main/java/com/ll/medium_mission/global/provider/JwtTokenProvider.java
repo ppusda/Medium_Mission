@@ -8,9 +8,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.crypto.SecretKey;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +27,11 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(appConfig.getJwtKey());
     }
 
-    public String createAccessToken(String id) {
+    public String createAccessToken(String id, List<String> roles) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(id)
+                .claim("roles", roles)
                 .signWith(key)
                 .setExpiration(new Date(now.getTime() + (1000L * 60 * 30)))
                 .setIssuedAt(now)
@@ -69,9 +74,15 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
-        User principal = new User(claims.getSubject(), "", new ArrayList<>());
+        User principal = new User(claims.getSubject(), "", mapToGrantedAuthorities((List<String>) claims.get("roles")));
 
-        return new UsernamePasswordAuthenticationToken(principal, token, new ArrayList<>());
+        return new UsernamePasswordAuthenticationToken(principal, token, principal.getAuthorities());
+    }
+
+    private static List<GrantedAuthority> mapToGrantedAuthorities(List<String> authorities) {
+        return authorities.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
     }
 
 }

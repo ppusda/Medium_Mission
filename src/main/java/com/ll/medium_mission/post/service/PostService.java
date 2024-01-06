@@ -1,10 +1,13 @@
 package com.ll.medium_mission.post.service;
 
+import com.ll.medium_mission.global.exception.NoHasAuthorityException;
+import com.ll.medium_mission.global.exception.NotExistPostException;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.post.dto.PostResponse;
 import com.ll.medium_mission.post.entity.Post;
 import com.ll.medium_mission.post.repository.PostRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,10 +22,11 @@ public class PostService {
     private final PostRepository postRepository;
 
     @Transactional
-    public void write(String title, String content, Member author) {
+    public void write(String title, String content, Boolean isPaid, Member author) {
         Post post = Post.builder()
                 .title(title)
                 .content(content)
+                .isPaid(isPaid)
                 .author(author)
                 .build();
 
@@ -33,13 +37,26 @@ public class PostService {
     public Page<PostResponse> getPosts(int page) {
         Pageable pageable = PageRequest.of(page, 5);
 
-        return convertToPageResponse(postRepository.findAll(pageable));
+        return convertToPageResponse(postRepository.findAllByOrderByCreateDateDesc(pageable));
+    }
+
+    @Transactional
+    public Page<PostResponse> getHotPosts() {
+        Pageable pageable = PageRequest.of(0, 5);
+
+        return convertToPageResponse(postRepository.getHotPosts(pageable));
     }
 
     @Transactional
     public Page<PostResponse> getAuthorsPosts(Member author, int page) {
         Pageable pageable = PageRequest.of(page, 5);
-        return convertToPageResponse(postRepository.findAllByAuthor(author, pageable));
+        return convertToPageResponse(postRepository.findAllByAuthorOrderByCreateDateDesc(author, pageable));
+    }
+
+    @Transactional
+    public Page<PostResponse> getSearchPosts(int page, String keyword) {
+        Pageable pageable = PageRequest.of(page, 5);
+        return convertToPageResponse(postRepository.searchPosts(keyword, pageable));
     }
 
     @Transactional
@@ -52,8 +69,10 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getNickname())
+                .isPaidUser(post.getAuthor().getIsPaid())
                 .recommendCount((long) post.getPostRecommends().size())
                 .viewCount(post.getViewCount())
+                .isPaid(post.getIsPaid())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build();
@@ -64,21 +83,28 @@ public class PostService {
         Optional<Post> post = postRepository.findById(postId);
 
         if (post.isEmpty()) {
-            throw new IllegalArgumentException("존재하지 않는 글입니다.");
+            throw new NotExistPostException();
         }
 
         return post.get();
     }
 
     @Transactional
-    public void modify(Long postId, String title, String content, Member author) {
+    public void cancelMembershipPost(List<Post> posts) {
+        for (Post post: posts) {
+            post.cancelMembership();
+        }
+    }
+
+    @Transactional
+    public void modify(Long postId, String title, String content, Boolean isPaid, Member author) {
         Post post = getPost(postId);
 
         if (!post.getAuthor().equals(author)) {
-            throw new IllegalArgumentException("수정 권한이 없습니다.");
+            throw new NoHasAuthorityException();
         }
 
-        post.modifyPost(title, content);
+        post.modifyPost(title, content, isPaid);
     }
 
     @Transactional
@@ -86,7 +112,7 @@ public class PostService {
         Post post = getPost(postId);
 
         if (!post.getAuthor().equals(author)) {
-            throw new IllegalArgumentException("삭제 권한이 없습니다.");
+            throw new NoHasAuthorityException();
         }
 
         postRepository.deleteById(postId);
@@ -98,7 +124,9 @@ public class PostService {
                 .title(post.getTitle())
                 .content(post.getContent())
                 .author(post.getAuthor().getNickname())
+                .isPaidUser(post.getAuthor().getIsPaid())
                 .recommendCount((long) post.getPostRecommends().size())
+                .isPaid(post.getIsPaid())
                 .createDate(post.getCreateDate())
                 .modifiedDate(post.getModifiedDate())
                 .build());

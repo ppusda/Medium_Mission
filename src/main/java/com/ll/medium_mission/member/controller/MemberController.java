@@ -6,10 +6,12 @@ import com.ll.medium_mission.member.dto.MemberCheckResponse;
 import com.ll.medium_mission.member.dto.MemberJoinRequest;
 import com.ll.medium_mission.member.dto.MemberLoginRequest;
 import com.ll.medium_mission.member.dto.MemberLoginResponse;
+import com.ll.medium_mission.member.dto.MemberModifyRequest;
 import com.ll.medium_mission.member.dto.MemberResponse;
 import com.ll.medium_mission.member.entity.Member;
 import com.ll.medium_mission.member.service.MemberService;
 import com.ll.medium_mission.member.validator.JoinValidator;
+import com.ll.medium_mission.member.validator.ModifyValidator;
 import jakarta.validation.Valid;
 import java.security.Principal;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,11 +34,13 @@ public class MemberController {
 
     private final MemberService memberService;
     private final CookieProvider cookieProvider;
-    private final JoinValidator joinValidator;
+
     private final ValidateUtil validateUtil;
+    private final JoinValidator joinValidator;
+    private final ModifyValidator modifyValidator;
 
     @PostMapping("/join")
-    public ResponseEntity<?> joinMember(@Valid MemberJoinRequest memberJoinRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> joinMember(@RequestBody @Valid MemberJoinRequest memberJoinRequest, BindingResult bindingResult) {
         joinValidator.validate(memberJoinRequest, bindingResult);
 
         if (validateUtil.hasErrors(bindingResult)) {
@@ -47,7 +52,7 @@ public class MemberController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginMember(@Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult) {
+    public ResponseEntity<?> loginMember(@RequestBody @Valid MemberLoginRequest memberLoginRequest, BindingResult bindingResult) {
         if (validateUtil.hasErrors(bindingResult)) {
             return validateUtil.getErrors(bindingResult);
         }
@@ -80,6 +85,31 @@ public class MemberController {
                 .build();
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify")
+    public ResponseEntity<?> modifyMember(@RequestBody @Valid MemberModifyRequest memberModifyRequest, BindingResult bindingResult, Principal principal) {
+        modifyValidator.validate(memberModifyRequest, bindingResult);
+
+        if (validateUtil.hasErrors(bindingResult)) {
+            return validateUtil.getErrors(bindingResult);
+        }
+
+        memberService.modify(principal.getName(), memberModifyRequest.nickname(), memberModifyRequest.password(), memberModifyRequest.newPassword());
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/membership")
+    public void registerMembership(Principal principal) {
+        memberService.registerMembership(principal.getName());
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @DeleteMapping("/membership")
+    public void cancelMembership(Principal principal) {
+        memberService.cancelMembership(principal.getName());
+    }
+
     @GetMapping("/check")
     public MemberCheckResponse checkMember(Principal principal) {
         if (principal != null) {
@@ -87,6 +117,7 @@ public class MemberController {
 
             return MemberCheckResponse.builder()
                     .nickname(member.getNickname())
+                    .isPaid(member.getIsPaid())
                     .result(true)
                     .build();
         }

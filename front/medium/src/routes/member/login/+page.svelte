@@ -1,15 +1,25 @@
 <script>
-  import {toastWarning} from "../../../app.js";
+  import {toastWarning} from "../../../toastr.js";
+
+  import {baseUrl} from "../../../stores.js";
 
   async function handleSubmit(event) {
     event.preventDefault();
     const formData = new FormData(event.target);
 
     if (formData) {
-      const response = await fetch(`https://api.medium.bbgk.me/member/login`, {
+      const jsonData = {};
+      for (let pair of formData.entries()) {
+        jsonData[pair[0]] = pair[1];
+      }
+
+      const response = await fetch(`${$baseUrl}/member/login`, {
         method: 'POST',
         credentials: 'include',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData),
       });
 
       if (!response.ok) {
@@ -23,9 +33,12 @@
           toastWarning(errorData.password);
           return;
         }
+
+        toastWarning(errorData.message);
+        return;
       }
 
-      window.location.href = `/`;
+      window.location.href = "/";
     }
   }
 

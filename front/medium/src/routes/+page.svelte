@@ -1,38 +1,32 @@
 <script>
-
 	import {onMount} from "svelte";
 
-	let loginCheck = $state({});
-	let loginUsername = $state({});
+	import {memberCheck} from "../member.js";
+	import {isLogin, baseUrl} from "../stores.js";
+
 	let postListData = $state({});
 	let postCount = $state({});
 
-	async function memberCheck() {
-		const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			loginCheck = data.result;
-		}
-	}
-
 	async function getHotPostList() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/popular-posts`, {
+		const response = await fetch(`${$baseUrl}/post/popular-posts`, {
 			credentials: 'include',
 		});
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
-			postListData = jsonResponse.content;
+			let formattedPostListData = [];
 
-			postListData.forEach(async (post) => {
-				post.content = formatContent(post.content);
-			});
+			for (let post of jsonResponse.content) {
+				let imageLinkMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
+				let imageLink = imageLinkMatch ? imageLinkMatch[1] : null;
+
+				formattedPostListData.push({
+					id: post.id,
+					title: post.title,
+					isPaid: post.isPaid,
+					image: imageLink
+				});
+			}
+			postListData = formattedPostListData;
 		}
 	}
 
@@ -59,7 +53,6 @@
 	}
 
 	onMount(async () => {
-		loginCheck = false;
 		await memberCheck();
 		await getHotPostList();
 
@@ -82,7 +75,7 @@
 					<div>
 						<h1 class="text-7xl font-bold">Medium Project</h1>
 						<p class="py-6">유료 글 포스팅을 할 수 있는 사이트 입니다.</p>
-						{#if loginCheck}
+						{#if $isLogin}
 							<a class="btn btn-primary" href="/post">Start Read</a>
 						{:else}
 							<a class="btn btn-primary" href="/member/login">Get Started</a>
@@ -105,10 +98,19 @@
 							{#each postListData.slice(0, postCount) as post}
 								<div class="flex flex-col gap-3 h-full w-52 mr-32">
 									<div class="h-min w-full">
-										<a class="bold" href="/post/{post.id}">{post.title}</a>
+										<a class="bold" href="/post/{post.id}">
+											{#if post.isPaid}
+												🌟
+											{/if}
+											{post.title}
+										</a>
 									</div>
-									<div class="h-min w-full">
-										<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" />
+									<div class="flex flex-row w-full h-full justify-center">
+										{#if post.image}
+											<img src="{post.image}" class="max-h-32 rounded-lg shadow-2xl m-3" />
+										{:else}
+											<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="rounded-lg shadow-2xl m-3" />
+										{/if}
 									</div>
 								</div>
 							{/each}
@@ -118,7 +120,6 @@
 			</div>
 		</div>
 	</div>
-
 
 </section>
 

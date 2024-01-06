@@ -10,7 +10,7 @@ import org.springframework.validation.Validator;
 @RequiredArgsConstructor
 public class JoinValidator implements Validator {
 
-    private final static String JOIN_ERROR_CODE = "JOIN_ERROR";
+    private final static String JOIN_ERROR = "JOIN_ERROR";
 
     @Override
     public boolean supports(Class<?> clazz) {
@@ -22,7 +22,7 @@ public class JoinValidator implements Validator {
         MemberJoinRequest request = (MemberJoinRequest) target;
 
         if (!request.password().equals(request.passwordConfirm())) {
-            errors.rejectValue("passwordConfirm", JOIN_ERROR_CODE, "비밀번호가 일치하지 않습니다.");
+            errors.rejectValue("passwordConfirm", JOIN_ERROR, "비밀번호가 일치하지 않습니다.");
         }
     }
 }

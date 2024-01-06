@@ -1,35 +1,18 @@
 <script>
-  import {toastNotice, toastWarning} from "../app.js";
+  import {toastNotice, toastWarning} from "../toastr.js";
   import {onMount} from "svelte";
+  import {goto} from "$app/navigation";
+
+  import {memberCheck} from "../member.js";
+  import {loginUsername, isLogin, baseUrl} from "../stores.js";
 
   const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
-  let loginUsername = $state({});
-  let loginCheck = $state({});
 
-  async function memberCheck() {
-    const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
-      credentials: 'include',
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      console.log(data);
-
-      if (data.nickname) {
-        loginUsername = data.nickname;
-      }
-
-      loginCheck = data.result;
-    } else {
-      toastWarning("로그인이 필요합니다.");
-      await logout();
-    }
-  }
 
   async function moveToWritePostPage() {
     await memberCheck();
-    if (loginCheck) {
-      window.location.href = '/post/write';
+    if ($isLogin) {
+      await goto('/post/write');
       return;
     }
     toastWarning("로그인이 필요합니다.");
@@ -40,15 +23,24 @@
     toastNotice("로그아웃 되었습니다.");
     window.location.href = '/';
   }
+
+ async function moveToMyPage() {
+    await memberCheck();
+    if ($isLogin) {
+      window.location.href = `/member/${$loginUsername}`;
+      return;
+    }
+    toastWarning("로그인이 필요합니다.");
+  }
+
   async function logout() {
-    await fetch(`https://api.medium.bbgk.me/member/logout`, {
+    await fetch(`${$baseUrl}/member/logout`, {
       method: 'DELETE',
       credentials: 'include',
     });
   }
 
   onMount(async () => {
-    loginCheck = false;
     await memberCheck();
   });
 
@@ -72,12 +64,13 @@
     <a class="btn btn-ghost text-xl" href="/">Medium</a>
   </div>
   <div class="navbar-end">
-    {#if loginCheck}
+    {#if $isLogin}
       <div class="dropdown dropdown-end">
-        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{loginUsername} 님, 환영합니다!</div>
+        <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">{$loginUsername} 님, 환영합니다!</div>
         <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
           <li><a on:click={moveToWritePostPage}>글 작성</a></li>
-          <li><a href="/member/{loginUsername}">내가 쓴 글 보기</a></li>
+          <li><a on:click={moveToMyPage}>마이페이지</a></li>
+          <li><a href="/member/membership">미디엄과 함께하기!</a></li>
           <li><a on:click={logoutProcess}>로그아웃</a></li>
         </ul>
       </div>

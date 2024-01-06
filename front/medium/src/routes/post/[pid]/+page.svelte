@@ -1,16 +1,36 @@
 <script>
-	import { page } from "$app/stores";
 	import {onMount} from "svelte";
-	import {toastWarning} from "../../../app.js";
+	import { page } from "$app/stores";
+	import {goto} from "$app/navigation";
+	import {toastWarning} from "../../../toastr.js";
+
+	import {memberCheck} from "../../../member.js";
+	import {isLogin, isPaidUser, loginUsername, baseUrl} from "../../../stores.js";
+
+	import '@toast-ui/editor/dist/toastui-editor-viewer.css';
+	import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+	import '@toast-ui/editor-plugin-code-syntax-highlight/dist/toastui-editor-plugin-code-syntax-highlight.css';
+
+	import Prism from 'prismjs';
+	import 'prismjs/themes/prism.css';
+	import 'prismjs/components/prism-c.js';
+	import 'prismjs/components/prism-sql.js';
+	import 'prismjs/components/prism-bash.js';
+	import 'prismjs/components/prism-java.js';
+	import 'prismjs/components/prism-kotlin.js';
+	import 'prismjs/components/prism-python.js';
+	import 'prismjs/components/prism-markup.js';
+	import 'prismjs/components/prism-javascript.js';
+	import 'prismjs/components/prism-typescript.js';
 
 	let postId =  $state({});
 	let postData = $state({});
-	let answerCount = $state({});
+	let isPaidPost = $state({});
 
 	let recommendCheck = $state({});
+	let recommendCount = $state({});
 
-	let loginCheck = $state({});
-	let loginUsername = $state({});
+	let viewer = $state({});
 
 	function formatDate(datePhrase) {
 		const date = new Date(datePhrase);
@@ -23,38 +43,25 @@
 		});
 	}
 
-	async function memberCheck() {
-		const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			loginCheck = data.result;
-		}
-	}
-
 	async function checkRecommend() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/${postId}/recommend`, {
+		const response = await fetch(`${$baseUrl}/post/${postId}/recommend`, {
 			credentials: 'include',
 		});
 		const responseData = await response.json();
 
 		if (response.ok) {
 			recommendCheck = responseData.isRecommended;
-			return;
+			recommendCount = responseData.recommendCount;
 		}
 	}
 
 	async function getPost() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
+		const response = await fetch(`${$baseUrl}/post/${postId}`, {
 			credentials: 'include',
 		});
 		postData = await response.json();
+
+		isPaidPost = postData.isPaid;
 
 		if (postData.createDate) {
 			postData.createDate = formatDate(postData.createDate);
@@ -63,12 +70,14 @@
 		if (postData.modifiedDate) {
 			postData.modifiedDate = formatDate(postData.modifiedDate);
 		}
+
+		recommendCount = postData.recommendCount;
 	}
 
 	async function moveToModifyPostPage() {
 		await memberCheck();
-		if (loginCheck) {
-			window.location.href = `/post/${postId}/modify`;
+		if ($isLogin) {
+			await goto(`/post/${postId}/modify`);
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
@@ -76,42 +85,86 @@
 
 	async function removePost() {
 		await memberCheck();
-		if (loginCheck) {
-			await fetch(`https://api.medium.bbgk.me/post/${postId}`, {
+		if ($isLogin) {
+			const response = await fetch(`${$baseUrl}/post/${postId}`, {
 				method: 'DELETE',
 				credentials: 'include',
 			});
-			window.location.href = `/post`;
+
+			if (!response.ok) {
+				const errorData = await response.json();
+
+				toastWarning(errorData.message);
+				return;
+			}
+
+			await goto(`/post`);
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	function goBack() {
-		window.history.back();
-	}
-
 	async function recommendPost() {
 		await memberCheck();
-		if (loginCheck) {
-			await fetch(`https://api.medium.bbgk.me/post/${postId}/recommend`, {
+		if ($isLogin) {
+			await fetch(`${$baseUrl}/post/${postId}/recommend`, {
 				method: 'POST',
 				credentials: 'include',
 			});
-			await getPost();
+
 			await checkRecommend();
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
+	async function checkMembership() {
+		if (isPaidPost) {
+			if (!$isPaidUser) {
+				toastWarning("유료 회원만 글을 볼 수 있습니다.");
+				window.history.back();
+			}
+		}
+	}
+
 	onMount(async () => {
+		const { default: Viewer } = await import('@toast-ui/editor/dist/toastui-editor-viewer');
+		const { default: codeSyntaxHighlight } = await import('@toast-ui/editor-plugin-code-syntax-highlight');
+
 		postId = $page.params['pid'];
 		recommendCheck = false;
 
 		await memberCheck();
 		await getPost();
-		await checkRecommend();
+
+		if ($isLogin) {
+			await checkRecommend();
+		}
+
+		await checkMembership();
+
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			viewer = new Viewer({
+				toolbarItems: [],
+				el: document.querySelector('#viewer'),
+				previewStyle: 'tab',
+				initialValue: postData.content,
+				hideModeSwitch: true,
+				height: '40rem',
+				theme: "dark",
+				plugins: [[codeSyntaxHighlight, { highlighter: Prism }]]
+			});
+		} else {
+			viewer = new Viewer({
+				toolbarItems: [],
+				el: document.querySelector('#viewer'),
+				previewStyle: 'tab',
+				initialValue: postData.content,
+				hideModeSwitch: true,
+				height: '40rem',
+				plugins: [[codeSyntaxHighlight, { highlighter: Prism }]]
+			});
+		}
 	});
 
 </script>
@@ -125,7 +178,7 @@
 	<div class="flex flex-col">
 		<div class="flex flex-col content-center flex-wrap">
 			<h2 class="text-3xl font-bold m-5">
-				<a class="btn btn-ghost" on:click={goBack}> <i class="fa-solid fa-arrow-left"></i> </a>
+				<a class="btn btn-ghost" href="/post"> <i class="fa-solid fa-arrow-left"></i> </a>
 				{postData.title}
 			</h2>
 			<div class="flex flex-row justify-between">
@@ -154,10 +207,10 @@
 						{:else}
 							<a class="btn btn-ghost" on:click={recommendPost}><i class="fa-regular fa-thumbs-up fa-xl"></i></a>
 						{/if}
-						<p>{postData.recommendCount}</p>
+						<p>{recommendCount}</p>
 					</div>
 					{#if postData.author}
-						{#if loginUsername === postData.author}
+						{#if $loginUsername === postData.author}
 							<a class="btn btn-ghost border-white mr-3" on:click={moveToModifyPostPage}>수정</a>
 							<a href="#remove_post_modal" class="btn btn-ghost border-white">삭제</a>
 							<div class="modal" role="dialog" id="remove_post_modal">
@@ -174,10 +227,11 @@
 					{/if}
 				</div>
 			</div>
-			<div class="card bg-base-100 shadow-xl border m-5 w-7/12">
+			<div class="card bg-base-300 shadow-xl border m-5 w-7/12">
 				<div class="card-body flex flex-col">
-					<p style="white-space: pre-wrap;">{postData.content}</p>
+					<div id="viewer">
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>

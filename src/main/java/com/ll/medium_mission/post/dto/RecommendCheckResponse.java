@@ -4,6 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record RecommendCheckResponse (
+        Long recommendCount,
         boolean isRecommended
 ){
 }

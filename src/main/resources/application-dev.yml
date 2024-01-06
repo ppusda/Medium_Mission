@@ -19,3 +19,4 @@ spring:
 
 medium:
   domain: localhost
+  path: D:\medium\images\

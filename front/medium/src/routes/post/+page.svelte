@@ -1,15 +1,21 @@
 <script>
-	import {toastWarning, toastNotice} from "../../app.js";
+	import {toastWarning, toastNotice} from "../../toastr.js";
 	import {onDestroy, onMount} from "svelte";
+	import {goto} from "$app/navigation";
+
+	import {remark} from 'remark';
+	import strip from 'strip-markdown';
+
+	import {memberCheck} from "../../member.js";
+	import {isLogin, baseUrl} from "../../stores.js";
 
 	const repository_href = "https://github.com/ppusda/Medium_Mission_JoDongGuk";
 	let currentPage = $state({});
 	let totalPages = $state({});
+
 	let postListData = $state([]);
 	let hotPostListData = $state([]);
-
-	let loginCheck = $state({});
-	let loginUsername = $state({});
+	let searchKeyword = "";
 
 	const NextPage = () => {
 		if (currentPage >= totalPages-1) {
@@ -27,56 +33,82 @@
 		}
 	}
 
-	function formatContent(contentPhrase) {
-		if (contentPhrase.length > 250) {
-			return contentPhrase.substring(0, 251).concat("...");
-		}
-		return contentPhrase;
-	}
-
-	async function memberCheck() {
-		const response = await fetch(`https://api.medium.bbgk.me/member/check`, {
-			credentials: 'include',
-		});
-		if (response.ok) {
-			const data = await response.json();
-
-			if (data.nickname) {
-				loginUsername = data.nickname;
-			}
-
-			loginCheck = data.result;
-		}
-	}
-
 	async function moveToWritePostPage() {
 		await memberCheck();
-		if (loginCheck) {
-			window.location.href = '/post/write';
+		if ($isLogin) {
+			await goto('/post/write');
 			return;
 		}
 		toastWarning("로그인이 필요합니다.");
 	}
 
-	async function getPostList() {
-		const response = await fetch(`https://api.medium.bbgk.me/post?page=${currentPage}`, {
+	async function formatContent(contentPhrase) {
+		const file = await remark()
+		.use(strip)
+		.process(contentPhrase);
+
+		if (file.value.length > 250) {
+			return file.value.substring(0, 251).concat("...");
+		}
+
+		file.value = file.value.replaceAll('image', '');
+		file.value = file.value.trim();
+
+		return file.value;
+	}
+
+	async function getPostList(keyword = '') {
+		const url = keyword ?
+				`${$baseUrl}/post/search?page=${currentPage}&keyword=${keyword}` :
+				`${$baseUrl}/post?page=${currentPage}`;
+
+		const response = await fetch(url, {
 			credentials: 'include',
 		});
+
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
-			postListData = postListData.concat(jsonResponse.content);
-			totalPages = jsonResponse.totalPages;
-			postListData.forEach(async (post) => {
-				post.content = formatContent(post.content);
-			});
+			let formattedPostListData = [];
+
+			for (let post of jsonResponse.content) {
+				let formattedContent = await formatContent(post.content);
+				let imageLinkMatch = post.content.match(/!\[.*?\]\((.*?)\)/);
+				let imageLink = imageLinkMatch ? imageLinkMatch[1] : null;
+
+				formattedPostListData.push({
+					id: post.id,
+					title: post.title,
+					isPaid: post.isPaid,
+					content: formattedContent,
+					image: imageLink
+				});
+			}
+			postListData = postListData.concat(formattedPostListData);
 		}
 	}
 
 	async function getHotPostList() {
-		const response = await fetch(`https://api.medium.bbgk.me/post/popular-posts`);
+		const response = await fetch(`${$baseUrl}/post/popular-posts`);
 		const jsonResponse = await response.json();
 		if (jsonResponse) {
 			hotPostListData = jsonResponse.content;
+		}
+	}
+
+	async function handleSubmit(event) {
+		event.preventDefault();
+		const formData = new FormData(event.target);
+		const keyword = formData.get('keyword');
+
+		if (keyword === '') {
+			await getPostList();
+		}
+
+		if (formData) {
+			currentPage = 0;
+			postListData = [];
+			searchKeyword = keyword;
+			await getPostList(searchKeyword);
 		}
 	}
 
@@ -135,15 +167,32 @@
 		</div>
 
 		<div class="flex flex-col w-full">
+			<div class="flex flex-row p-3 form-control justify-end">
+				<form on:submit={handleSubmit} method="get">
+					<input type="text" id="keyword" name="keyword" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+					<button class="btn btn-ghost btn-circle me-3" type="submit">
+						<i class="fa-solid fa-magnifying-glass"></i>
+					</button>
+				</form>
+			</div>
 			{#each postListData as data}
 				<div class="m-3 w-full">
 					<div class="hero bg-base-200">
 						<div class="hero-content flex-col w-full lg:flex-row">
-							<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="max-w-sm rounded-lg shadow-2xl m-3" />
-							<div class="flex flex-col w-full">
+							{#if data.image}
+								<img src="{data.image}" class="max-w-sm rounded-lg shadow-2xl m-3" />
+							{:else}
+								<img src="https://images.unsplash.com/photo-1571916234808-adf437ac1644?q=80&w=2099&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="max-w-sm rounded-lg shadow-2xl m-3" />
+							{/if}
+							<div class="flex flex-col w-full justify-between">
 								<h1 class="text-4xl font-bold">{data.title}</h1>
 								<p class="py-6">{data.content}</p>
-								<a class="btn btn-primary" href="/post/{data.id}">Read Post</a>
+								<div class="flex flex-row justify-between items-center">
+									<a class="btn btn-primary w-10/12" href="/post/{data.id}">Read Post</a>
+									{#if data.isPaid}
+										<p>🌟 Member-Only</p>
+									{/if}
+								</div>
 							</div>
 						</div>
 					</div>

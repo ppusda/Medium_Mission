@@ -2,15 +2,13 @@ package com.ll.medium_mission.global.util;
 
 import com.ll.medium_mission.global.provider.CookieProvider;
 import com.ll.medium_mission.global.provider.JwtTokenProvider;
-import com.ll.medium_mission.token.entity.Token;
-import com.ll.medium_mission.token.service.TokenService;
+import com.ll.medium_mission.token.service.TokenValidationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import javax.security.sasl.AuthenticationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
@@ -25,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
-    private final TokenService tokenService;
+    private final TokenValidationService tokenValidationService;
 
     private String getTokenFromRequest(HttpServletRequest request, String tokenName) {
         Cookie[] cookies = request.getCookies();
@@ -51,22 +49,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (!jwtTokenProvider.validateToken(accessToken)){
             String memberId = jwtTokenProvider.getClaims(accessToken).getSubject();
             String refreshToken = getTokenFromRequest(request, "refreshToken");
-            Token token = tokenService.getToken(memberId);
 
-            if (!StringUtils.hasText(refreshToken)) {
-                tokenService.deleteToken(memberId);
-                throw new AuthenticationException("잘못된 접근입니다. 재로그인이 필요합니다.");
-            }
+            tokenValidationService.validateRefreshTokenNotEmpty(memberId, refreshToken);
+            tokenValidationService.validateRefreshToken(memberId, refreshToken);
 
-            if (!refreshToken.equals(token.getRefreshToken()) || !jwtTokenProvider.validateToken(token.getRefreshToken())) {
-                throw new AuthenticationException("재로그인이 필요합니다.");
-            }
-
-            accessToken = jwtTokenProvider.createAccessToken(memberId);
-            refreshToken = jwtTokenProvider.createRefreshToken(memberId);
-
-            tokenService.deleteToken(memberId);
-            tokenService.register(refreshToken, Long.valueOf(memberId));
+            accessToken = tokenValidationService.refreshTokens(memberId);
 
             response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createAccessTokenCookie(accessToken).toString());
             response.setHeader(HttpHeaders.SET_COOKIE, cookieProvider.createRefreshTokenCookie(refreshToken).toString());

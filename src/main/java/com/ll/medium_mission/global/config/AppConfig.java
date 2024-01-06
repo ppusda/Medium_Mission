@@ -10,6 +10,7 @@ public class AppConfig {
 
     public byte[] jwtKey;
     public String domain;
+    public String path;
 
     public void setJwtKey(String jwtKey) {
         this.jwtKey = Base64.getDecoder().decode(jwtKey);
@@ -17,5 +18,9 @@ public class AppConfig {
 
     public void setDomain(String domain) {
         this.domain = domain;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

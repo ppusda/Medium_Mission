@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers(mvc.pattern("/post/{postId}")).permitAll()
                                 .requestMatchers(mvc.pattern("/post/{author}/posts")).permitAll()
                                 .requestMatchers(mvc.pattern("/member/join")).permitAll()
+                                .requestMatchers(mvc.pattern("/tui/image")).permitAll()
                                 .requestMatchers(mvc.pattern("/h2-console/**")).permitAll()
                                 .anyRequest().authenticated()
                 )
@@ -60,11 +61,6 @@ public class SecurityConfig {
     @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
         return new MvcRequestMatcher.Builder(introspector);
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }
