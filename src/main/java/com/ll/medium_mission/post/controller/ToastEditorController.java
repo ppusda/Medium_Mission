@@ -44,7 +44,7 @@ public class ToastEditorController {
         String orgFilename = image.getOriginalFilename();
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
         String extension = orgFilename.substring(orgFilename.lastIndexOf(".") + 1);
-        String saveFilename = uuid + "." + extension;
+        String saveFilename = LocalDate.now() + "_" + uuid + "." + extension;
         String datePath = pathUtil.getDatePath(path, String.valueOf(LocalDate.now()));
 
         String fileFullPath = Paths.get(datePath, saveFilename).toString();
@@ -66,7 +66,9 @@ public class ToastEditorController {
 
     @GetMapping(value = "/image", produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public byte[] printEditorImage(@RequestParam final String filename) {
-        String datePath = pathUtil.getDatePath(path, String.valueOf(LocalDate.now()));
+        String uploadDate = filename.substring(0, filename.indexOf("_"));
+        String datePath = pathUtil.getDatePath(path, uploadDate);
+
         String fileFullPath = Paths.get(datePath, filename).toString();
 
         File uploadedFile = new File(fileFullPath);
