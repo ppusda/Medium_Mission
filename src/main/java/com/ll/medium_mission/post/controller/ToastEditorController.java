@@ -4,14 +4,12 @@ import com.ll.medium_mission.global.config.AppConfig;
 import com.ll.medium_mission.global.exception.ImageDownloadException;
 import com.ll.medium_mission.global.exception.ImageNotFoundException;
 import com.ll.medium_mission.global.exception.ImageUploadException;
-import com.ll.medium_mission.post.util.PathUtil;
+import com.ll.medium_mission.post.util.FileUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Principal;
 import java.time.LocalDate;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,11 +25,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/tui")
 public class ToastEditorController {
     private String path;
-    private final PathUtil pathUtil;
+    private final FileUtil fileUtil;
 
-    public ToastEditorController(AppConfig appConfig, PathUtil pathUtil) {
+    public ToastEditorController(AppConfig appConfig, FileUtil fileUtil) {
         this.path = appConfig.getPath();
-        this.pathUtil = pathUtil;
+        this.fileUtil = fileUtil;
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -41,11 +39,11 @@ public class ToastEditorController {
             return "";
         }
 
-        String orgFilename = image.getOriginalFilename();
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        String extension = orgFilename.substring(orgFilename.lastIndexOf(".") + 1);
-        String saveFilename = LocalDate.now() + "_" + uuid + "." + extension;
-        String datePath = pathUtil.getDatePath(path, String.valueOf(LocalDate.now()));
+        String date = String.valueOf(LocalDate.now());
+        String originalFilename = image.getOriginalFilename();
+
+        String saveFilename = fileUtil.getUUIDFileName(originalFilename, date);
+        String datePath = fileUtil.getDatePath(path, date);
 
         String fileFullPath = Paths.get(datePath, saveFilename).toString();
 
@@ -66,8 +64,8 @@ public class ToastEditorController {
 
     @GetMapping(value = "/image", produces = { MediaType.IMAGE_GIF_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE })
     public byte[] printEditorImage(@RequestParam final String filename) {
-        String uploadDate = filename.substring(0, filename.indexOf("_"));
-        String datePath = pathUtil.getDatePath(path, uploadDate);
+        String uploadDate = fileUtil.getUploadDate(filename);
+        String datePath = fileUtil.getDatePath(path, uploadDate);
 
         String fileFullPath = Paths.get(datePath, filename).toString();
 
@@ -78,7 +76,6 @@ public class ToastEditorController {
 
         try {
             return Files.readAllBytes(uploadedFile.toPath());
-
         } catch (IOException e) {
             throw new ImageDownloadException();
         }
