@@ -3,12 +3,13 @@ package com.ll.medium_mission.global.crypto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
-public class PasswordEncoder {
+public class BcryptPasswordEncoder {
 
     @Bean
-    org.springframework.security.crypto.password.PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
