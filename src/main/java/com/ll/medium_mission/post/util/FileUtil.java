@@ -1,6 +1,6 @@
 package com.ll.medium_mission.post.util;
 
-import com.ll.medium_mission.global.exception.ImageNotFoundException;
+import com.ll.medium_mission.global.exception.FileNameNotValidException;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,7 +25,7 @@ public class FileUtil {
         Matcher matcher = pattern.matcher(filename);
 
         if (!matcher.find()) {
-            throw new ImageNotFoundException();
+            throw new FileNameNotValidException();
         }
 
         return matcher.group().replace('_', '-');
