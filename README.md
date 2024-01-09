@@ -8,6 +8,8 @@
 
 - Language : Javascript
 - Library & Framework : Svelte
+- Deploy: NCP, Docker, Nginx
+- CI/CD : Github Actions
 
 **Backend**
 
