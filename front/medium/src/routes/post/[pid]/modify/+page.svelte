@@ -5,6 +5,7 @@
 	import {goto} from "$app/navigation";
 
 	import {memberCheck} from "../../../../member.js";
+	import {uploadImage, downloadImage} from "../../../../image.js";
 	import {isLogin, isPaidUser, loginUsername, baseUrl} from "../../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor.css';
@@ -92,6 +93,21 @@
 				height: '30rem',
 				initialValue: postData.content,
 				theme: 'dark',
+				hooks: {
+					async addImageBlobHook(blob, callback) {
+						try {
+							const formData = new FormData();
+							formData.append('image', blob);
+
+							const filename = await uploadImage(formData);
+							const imageUrl = await downloadImage(filename);
+
+							callback(imageUrl, 'image');
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				},
 			});
 		} else {
 			editor = new Editor({
@@ -99,6 +115,21 @@
 				previewStyle: 'vertical',
 				initialValue: postData.content,
 				height: '30rem',
+				hooks: {
+					async addImageBlobHook(blob, callback) {
+						try {
+							const formData = new FormData();
+							formData.append('image', blob);
+
+							const filename = await uploadImage(formData);
+							const imageUrl = await downloadImage(filename);
+
+							callback(imageUrl, 'image');
+						} catch (error) {
+							console.error(error);
+						}
+					}
+				},
 			});
 		}
 	});

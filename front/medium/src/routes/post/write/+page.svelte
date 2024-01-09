@@ -4,6 +4,7 @@
 	import {goto} from "$app/navigation";
 
 	import {memberCheck} from "../../../member.js";
+	import {uploadImage, downloadImage} from "../../../image.js";
 	import {isLogin, isPaidUser, baseUrl} from "../../../stores.js";
 
 	import '@toast-ui/editor/dist/toastui-editor.css';
@@ -54,37 +55,6 @@
 
 			await goto(`/post`);
 		}
-	}
-
-	async function uploadImage(formData) {
-		const response = await fetch(`${$baseUrl}/tui/image`, {
-			method : 'POST',
-			credentials: 'include',
-			body : formData,
-		});
-
-		if (!response.ok) {
-			const errorData = await response.json();
-			toastWarning(errorData.message);
-			return;
-		}
-
-		return await response.text();
-	}
-
-	async function downloadImage(filename) {
-		const response = await fetch(`${$baseUrl}/tui/image?filename=${filename}`, {
-			method : 'GET',
-			credentials: 'include',
-		});
-
-		if (!response.ok) {
-			const errorData = await response.json();
-			toastWarning(errorData.message);
-			return;
-		}
-
-		return response.url;
 	}
 
 	onMount(async () => {
