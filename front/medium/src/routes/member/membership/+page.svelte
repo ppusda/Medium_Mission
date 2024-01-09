@@ -90,13 +90,23 @@
 
   <div class="w-full">
     {#if !$isPaidUser}
-      <a class="btn btn-warning w-full" on:click={registerMembership}>2,000₩ 으로 시작하기!</a>
+      <label for="start_membership_modal" class="btn btn-warning w-full">2,000₩ 으로 시작하기!</label>
+      <input type="checkbox" id="start_membership_modal" class="modal-toggle" />
+      <div class="modal" role="dialog">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg"> <i class="fa-solid fa-circle-check"></i> 결제 완료</h3>
+          <span>결제 되었습니다.</span>
+          <div class="modal-action">
+            <a class="btn btn-primary" on:click={registerMembership}>확인</a>
+          </div>
+        </div>
+      </div>
     {:else}
       <label for="cancel_membership_modal" class="btn btn-error w-full">멤버쉽 해지하기</label>
       <input type="checkbox" id="cancel_membership_modal" class="modal-toggle" />
       <div class="modal" role="dialog">
         <div class="modal-box">
-          <h3 class="font-bold text-lg">멤버쉽 해지</h3>
+          <h3 class="font-bold text-lg"> <i class="fa-solid fa-circle-xmark"></i> 멤버쉽 해지</h3>
           <span>정말로 해지하시겠습니까?</span>
           <div class="modal-action">
             <a class="btn btn-error" on:click={cancelMembership}>삭제</a>
