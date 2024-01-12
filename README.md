@@ -7,20 +7,23 @@
 **Frontend**
 
 - Language : Javascript
-- Library & Framework : Svelte
-- Deploy: NCP, Docker, Nginx
+- Framework : Svelte
+- Library : Toast UI, Tailwind, Daisy UI
+- Deploy: NCP, Docker, Nginx Proxy Manager
 - CI/CD : Github Actions
 
 **Backend**
 
 - Language : Java
-- Library & Framework : Spring Boot
+- Framework : Spring Boot
 - Database : H2, MySQL, Redis
 - ORM : JPA
-- Deploy: NCP, Docker, Nginx
+- Library : QueryDSL
+- Deploy: NCP, Docker, Nginx Proxy Manager
 - CI/CD : Github Actions
 
-**구현 시 옵션 사항**
-- 배포, 도메인 연결, CI/CD
-- 프론트 구현 (`Tailwind`, `Daisy UI`, `Svelte Kit`)
-- RefreshToken -> Redis 사용
+![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/b3989df1-b5a7-43bb-bb98-a81d8e8f8c27)
+
+
+## 🎞 배포 
+![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/4824f580-a63a-4c1b-b51f-55bfaf638e14)
