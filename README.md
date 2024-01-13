@@ -2,7 +2,7 @@
 
 ### Medium 사이트를 바탕으로 자유롭게 구현하는 미션 프로젝트
 - ~~[Medium 사이트 이용해보기](https://medium.bbgk.me/)~~
-- `현재는 운영하지 않고 있습니다. 아래 구현 내용을 참고 해주시길 바랍니디.`
+- `현재는 운영하지 않고 있습니다. 아래 구현 내용을 참고 해주시길 바랍니다.`
 
 ## ⚙ 기술 스택
 ![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/fe6eb702-5946-4b5f-8379-ab69595274da)
