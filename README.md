@@ -11,7 +11,7 @@
 
 - Language : Javascript
 - Framework : SvelteKit
-- Library : Toast UI, Tailwind, Daisy UI
+- Library : Tailwind, Daisy UI, Toast UI Editor
 - Deploy: NCP, Docker, Nginx Proxy Manager
 - CI/CD : Github Actions
 
