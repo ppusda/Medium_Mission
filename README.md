@@ -5,6 +5,22 @@
 - ~~[Medium 사이트 이용해보기](https://medium.bbgk.me/)~~
 - `현재는 운영하지 않고 있습니다. 아래 구현 내용을 참고 해주시길 바랍니다.`
 
+### 주요 기능
+
+- 유저 로그인 기능 및 가장 인기가 많은 글 추천
+    - `Spring Security`와 `JWT`를 이용한 로그인 기능 제공
+    - 최근 일주일 내 추천을 가장 많이 받은 글 제공
+
+![main](https://github.com/ppusda/Medium_Mission/assets/51808344/787f5d84-6bb2-451e-90fa-76e9eaed6c4f)
+
+
+- 마크다운 문법 기반 글 작성 및 이미지 업로드 기능 제공
+    - 마크다운 문법 기반 글 작성 에디터 제공
+    - 이미지 업로드 시 링크로 변환 후 제공
+
+![edit](https://github.com/ppusda/Medium_Mission/assets/51808344/d9a88672-da92-4d82-b4dd-f88de06e6d88)
+
+
 ## ⚙ 기술 스택
 ![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/fe6eb702-5946-4b5f-8379-ab69595274da)
 
@@ -31,6 +47,9 @@
 
 
 ## 📚 구현 내용
+
+<details>
+    <summary>자세히</summary>
 
 - 회원 
   - 회원가입
@@ -80,4 +99,4 @@
     ![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/43f59728-0df7-46a1-a98d-d928e1a50433)
     ![image](https://github.com/ppusda/Medium_Mission_JoDongGuk/assets/51808344/0f8507a5-b520-472f-a122-7e2f9abd5cc0)
 
-
+</details>
